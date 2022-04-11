@@ -186,6 +186,12 @@
     <ClCompile Include="Testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterCbuf.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowsMessageMap.h">
@@ -386,6 +392,12 @@
     <ClInclude Include="Stencil.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="Water.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterCbuf.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hw3d.rc">
@@ -452,6 +464,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="PhongPSSpecNormMask.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="WaterPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="WaterVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

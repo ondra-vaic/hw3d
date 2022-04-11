@@ -10,6 +10,7 @@
 #include <set>
 #include "ScriptCommander.h"
 #include "Stencil.h"
+#include "Water.h"
 
 class App
 {
@@ -31,10 +32,10 @@ private:
 	float speed_factor = 1.0f;
 	Camera cam;
 	PointLight light;
-	TestCube cube{ wnd.Gfx(),4.0f };
-	TestCube cube2{ wnd.Gfx(),4.0f };
+	Water water{ wnd.Gfx(),50.0f,{ 0.3f,0.3f,1.0f,0.5f } };
+	TestPlane ground{ wnd.Gfx(),50.0f,{ 0.6f,0.6f,0.6f,1 } };
+
 	//Model sponza{ wnd.Gfx(),"Models\\sponza\\sponza.obj",1.0f / 20.0f };
-	//TestPlane bluePlane{ wnd.Gfx(),6.0f,{ 0.3f,0.3f,1.0f,0.0f } };
 	//TestPlane redPlane{ wnd.Gfx(),6.0f,{ 1.0f,0.3f,0.3f,0.0f } };
 	//Model gobber{ wnd.Gfx(),"Models\\gobber\\GoblinX.obj",6.0f };
 	//Model wall{ wnd.Gfx(),"Models\\brick_wall\\brick_wall.obj",6.0f };

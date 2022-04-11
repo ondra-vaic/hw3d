@@ -80,6 +80,6 @@ public:
 		vl.Append( VertexLayout::Normal );
 		vl.Append( VertexLayout::Texture2D );
 
-		return MakeTesselatedTextured( std::move( vl ),1,1 );
+		return MakeTesselatedTextured( std::move( vl ),100,100 );
 	}
 };

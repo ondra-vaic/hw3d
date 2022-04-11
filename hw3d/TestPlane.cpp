@@ -1,6 +1,7 @@
 #include "TestPlane.h"
 #include "Plane.h"
 #include "BindableCommon.h"
+#include "Stencil.h"
 #include "imgui/imgui.h"
 #include "TransformCbufDoubleboi.h"
 
@@ -31,9 +32,9 @@ TestPlane::TestPlane( Graphics& gfx,float size,DirectX::XMFLOAT4 color )
 
 	AddBind( std::make_shared<TransformCbuf>( gfx,*this,0u ) );
 
-	AddBind( Blender::Resolve( gfx,true,0.5f ) );
+	AddBind(std::make_shared<Blender>( gfx,true,0.5f ) );
 	
-	AddBind( Rasterizer::Resolve( gfx,true ) );
+	AddBind( Rasterizer::Resolve( gfx,false ) );
 }
 
 void TestPlane::SetPos( DirectX::XMFLOAT3 pos ) noexcept
