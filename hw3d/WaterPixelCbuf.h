@@ -10,7 +10,7 @@ namespace Bind
 		struct WaterPixelParams
 		{
 			DirectX::XMFLOAT3 cameraPosition;
-			float padding;
+			float time;
 		};
 	public:
 		WaterPixelCbuf(Graphics& gfx, const Drawable& parent, UINT slot = 0u);
@@ -19,7 +19,9 @@ namespace Bind
 		void UpdateBindImpl(Graphics& gfx, const WaterPixelParams& tf) noexcept;
 		WaterPixelParams GetWaterParams(Graphics& gfx) noexcept;
 	private:
+		int getTime();
 		static std::unique_ptr<PixelConstantBuffer<WaterPixelParams>> pPcbuf;
 		const Drawable& parent;
+		int startTime;
 	};
 }

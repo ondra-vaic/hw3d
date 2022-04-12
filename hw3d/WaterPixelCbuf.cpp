@@ -7,6 +7,8 @@ namespace Bind
 		:
 		parent(parent)
 	{
+		startTime = getTime();
+		
 		if (!pPcbuf)
 		{
 			pPcbuf = std::make_unique<PixelConstantBuffer<WaterPixelParams>>(gfx, slot);
@@ -26,10 +28,21 @@ namespace Bind
 
 	WaterPixelCbuf::WaterPixelParams WaterPixelCbuf::GetWaterParams(Graphics& gfx) noexcept
 	{
-		float x = gfx.GetCameraPosition().x;
+		const int timeSinceStart = getTime() - startTime;
 		return {
-			gfx.GetCameraPosition()
+			gfx.GetCameraPosition(),
+			static_cast<float>(timeSinceStart)
 		};
+	}
+
+	int WaterPixelCbuf::getTime()
+	{
+		using namespace std::chrono;
+		auto ms = duration_cast<milliseconds>(
+			system_clock::now().time_since_epoch()
+			);
+
+		return static_cast<int>(ms.count());
 	}
 
 	std::unique_ptr<PixelConstantBuffer<WaterPixelCbuf::WaterPixelParams>> WaterPixelCbuf::pPcbuf;

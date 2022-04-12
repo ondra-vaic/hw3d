@@ -69,6 +69,7 @@
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)\$(ProjectName)\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel>4.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -94,6 +95,7 @@
     </Link>
     <FxCompile>
       <ObjectFileOutput>$(SolutionDir)\$(ProjectName)\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel>4.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

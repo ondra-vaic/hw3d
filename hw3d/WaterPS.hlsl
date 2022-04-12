@@ -12,12 +12,22 @@ cbuffer PointLightCBuf
 cbuffer CBuf : register(b1)
 {
 	float3 cameraPosition;
-	float padding;
+	float time;
+};
+
+struct WaveParameters
+{
+	float amplitude;
+	float frequency;
+	float speed;
+	float2 direction;
 };
 
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent) : SV_Target
 {
-	float3 normal = normalize(Normal);
+	const float3x3 tanToTarget = float3x3(normalize(Tangent), normalize(Normal), normalize(BiTangent));
+	float3 normal = normalize(mul(float3(0, 1, 0), tanToTarget));
+
 	float3 lightDirection = normalize(lightPos - WorldPosition);
 	float3 lightColor = float3(0.7, 0.83, 0.93);
 	float3 ambient = float3(0.15, 0.15, 0.15);
