@@ -160,6 +160,7 @@
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Water.cpp" />
     <ClCompile Include="WaterCbuf.cpp" />
+    <ClCompile Include="WaterPixelCbuf.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WindowsMessageMap.cpp" />
     <ClCompile Include="WinMain.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="Water.h" />
     <ClInclude Include="WaterCbuf.h" />
+    <ClInclude Include="WaterPixelCbuf.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsMessageMap.h" />
     <ClInclude Include="WindowsThrowMacros.h" />

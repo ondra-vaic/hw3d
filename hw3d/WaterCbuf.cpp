@@ -28,10 +28,10 @@ namespace Bind
 	WaterCbuf::WaterParams WaterCbuf::GetWaterParams(Graphics& gfx) noexcept
 	{
 		auto model = parent.GetTransformXM();
-		auto view = gfx.GetCamera();
+		auto view = gfx.GetCameraTransform();
 		auto projection = gfx.GetProjection();
 
-		const auto modelView = parent.GetTransformXM() * gfx.GetCamera();
+		const auto modelView = parent.GetTransformXM() * gfx.GetCameraTransform();
 
 		float timeSinceStart = getTime() - startTime;
 		return {

@@ -5,6 +5,7 @@
 #include "imgui/imgui.h"
 #include "TransformCbufDoubleboi.h"
 #include "WaterCbuf.h"
+#include "WaterPixelCbuf.h"
 
 Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	:
@@ -25,7 +26,7 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 
 	AddBind(PixelShader::Resolve(gfx, "WaterPS.cso"));
 
-	AddBind(std::make_shared<PixelConstantBuffer<PSMaterialConstant>>(gfx, pmc, 1u));
+	AddBind(std::make_shared<WaterPixelCbuf>(gfx, *this, 1u));
 
 	AddBind(std::make_shared<Stencil>(gfx, Stencil::Mode::Off));
 

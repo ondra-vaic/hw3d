@@ -1,4 +1,7 @@
 #include "Camera.h"
+
+#include <algorithm>
+
 #include "imgui/imgui.h"
 #include "ChiliMath.h"
 
@@ -14,13 +17,13 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 	using namespace dx;
 
 	const dx::XMVECTOR forwardBaseVector = XMVectorSet( 0.0f,0.0f,1.0f,0.0f );
-	// apply the camera rotations to a base vector
+	// apply the cameraTransform rotations to a base vector
 	const auto lookVector = XMVector3Transform( forwardBaseVector,
 		XMMatrixRotationRollPitchYaw( pitch,yaw,0.0f )
 	);
-	// generate camera transform (applied to all objects to arrange them relative
-	// to camera position/orientation in world) from cam position and direction
-	// camera "top" always faces towards +Y (cannot do a barrel roll)
+	// generate cameraTransform transform (applied to all objects to arrange them relative
+	// to cameraTransform position/orientation in world) from cam position and direction
+	// cameraTransform "top" always faces towards +Y (cannot do a barrel roll)
 	const auto camPosition = XMLoadFloat3( &pos );
 	const auto camTarget = camPosition + lookVector;
 	return XMMatrixLookAtLH( camPosition,camTarget,XMVectorSet( 0.0f,1.0f,0.0f,0.0f ) );

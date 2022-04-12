@@ -82,7 +82,7 @@ float3 calculateWaveNormal(float3 position)
 struct VS_OUTPUT
 {
 	float4 Position : SV_Position;
-	float4 Position2 : Position;
+	float4 WorldPosition : Position;
 	float3 Normal : Normal;
 	float3 Tangent : Tangent;
 	float3 BiTangent : Bitangent;
@@ -95,9 +95,9 @@ VS_OUTPUT main(float3 pos : Position)
 	float4 modelPosition = mul(float4(pos, 1.0f), model);
 
 	float3 newPosition = calculateWavePosition(modelPosition.xyz);
-
+	
 	output.Position = mul(mul(float4(newPosition, 1.0f), view), projection);
-	output.Position2 = mul(mul(float4(newPosition, 1.0f), view), projection);
+	output.WorldPosition = float4(newPosition, 1.0f);
 	output.Normal = calculateWaveNormal(modelPosition.xyz);
 	return output;
 }

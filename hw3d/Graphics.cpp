@@ -4,6 +4,8 @@
 #include <d3dcompiler.h>
 #include <cmath>
 #include <DirectXMath.h>
+
+#include "Camera.h"
 #include "GraphicsThrowMacros.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
@@ -164,14 +166,19 @@ DirectX::XMMATRIX Graphics::GetProjection() const noexcept
 	return projection;
 }
 
-void Graphics::SetCamera( DirectX::FXMMATRIX cam ) noexcept
+void Graphics::SetCamera( Camera cam ) noexcept
 {
 	camera = cam;
 }
 
-DirectX::XMMATRIX Graphics::GetCamera() const noexcept
+DirectX::XMFLOAT3 Graphics::GetCameraPosition() const noexcept
 {
-	return camera;
+	return camera.GetPos();
+}
+
+DirectX::XMMATRIX Graphics::GetCameraTransform() const noexcept
+{
+	return camera.GetMatrix();
 }
 
 void Graphics::EnableImgui() noexcept

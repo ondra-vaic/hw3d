@@ -192,6 +192,9 @@
     <ClCompile Include="WaterCbuf.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="WaterPixelCbuf.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowsMessageMap.h">
@@ -396,6 +399,9 @@
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="WaterCbuf.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterPixelCbuf.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
   </ItemGroup>

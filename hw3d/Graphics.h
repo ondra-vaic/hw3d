@@ -1,5 +1,6 @@
 #pragma once
 #include "ChiliWin.h"
+#include "Camera.h"
 #include "ChiliException.h"
 #include <d3d11.h>
 #include <wrl.h>
@@ -9,7 +10,9 @@
 #include <DirectXMath.h>
 #include <memory>
 #include <random>
+
 #include "ConditionalNoexcept.h"
+
 
 namespace Bind
 {
@@ -66,14 +69,16 @@ public:
 	void DrawIndexed( UINT count ) noxnd;
 	void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
-	void SetCamera( DirectX::FXMMATRIX cam ) noexcept;
-	DirectX::XMMATRIX GetCamera() const noexcept;
+	void SetCamera( Camera cam ) noexcept;
+	DirectX::XMFLOAT3 GetCameraPosition() const noexcept;
+	DirectX::XMMATRIX GetCameraTransform() const noexcept;
 	void EnableImgui() noexcept;
 	void DisableImgui() noexcept;
 	bool IsImguiEnabled() const noexcept;
 private:
 	DirectX::XMMATRIX projection;
-	DirectX::XMMATRIX camera;
+	Camera camera;
+
 	bool imguiEnabled = true;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
