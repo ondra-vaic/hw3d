@@ -121,9 +121,10 @@ struct VS_OUTPUT
 	float3 Normal : Normal;
 	float3 Tangent : Tangent;
 	float3 BiTangent : Bitangent;
+	float2 tc : Texcoord;
 };
 
-VS_OUTPUT main(float3 pos : Position)
+VS_OUTPUT main(float3 pos : Position, float2 tc : Texcoord)
 {
 	VS_OUTPUT output;
 
@@ -136,6 +137,7 @@ VS_OUTPUT main(float3 pos : Position)
 	output.Normal = calculateWaveNormal(modelPosition.xyz);
 	output.Tangent = calculateWaveTangent(modelPosition.xyz);
 	output.BiTangent = cross(output.Tangent, output.Normal);
+	output.tc = tc;
 
 	return output;
 }

@@ -112,7 +112,7 @@ Surface Surface::FromFile( const std::string& name )
 		hr = DirectX::Convert(
 			*scratch.GetImage( 0,0,0 ),
 			format,
-			DirectX::TEX_FILTER_DEFAULT,
+			DirectX::TEX_FILTER_SRGB,
 			DirectX::TEX_THRESHOLD_DEFAULT,
 			converted
 		);

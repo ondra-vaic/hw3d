@@ -20,6 +20,10 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	AddBind(VertexBuffer::Resolve(gfx, geometryTag, model.vertices));
 	AddBind(IndexBuffer::Resolve(gfx, geometryTag, model.indices));
 
+	AddBind(Texture::Resolve(gfx, "Images\\waterNormal3.png"));
+	AddBind(Sampler::Resolve(gfx));
+	//AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal.jpg", 1u));
+
 	auto pvs = VertexShader::Resolve(gfx, "WaterVS.cso");
 	auto pvsbc = pvs->GetBytecode();
 	AddBind(std::move(pvs));
