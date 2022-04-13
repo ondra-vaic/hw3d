@@ -18,7 +18,7 @@ struct WaveParameters
 
 float3 calculateWavePosition(float3 position)
 {
-	float Q = 0.8f;
+	float Q = 0.4f;
 	const int numWaves = 3;
 
 	const WaveParameters _WaveParameters[numWaves] = {
@@ -48,7 +48,7 @@ float3 calculateWavePosition(float3 position)
 
 float3 calculateWaveNormal(float3 position)
 {
-	float Q = 0.8f;
+	float Q = 0.4f;
 	const int numWaves = 3;
 
 	const WaveParameters _WaveParameters[numWaves] = {
@@ -77,7 +77,7 @@ float3 calculateWaveNormal(float3 position)
 
 float3 calculateWaveTangent(float3 position)
 {
-	float Q = 0.8f;
+	float Q = 0.4f;
 	const int numWaves = 3;
 
 	const WaveParameters _WaveParameters[numWaves] = {
