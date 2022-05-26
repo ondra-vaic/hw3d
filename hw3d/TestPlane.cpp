@@ -32,7 +32,7 @@ TestPlane::TestPlane( Graphics& gfx,float size,DirectX::XMFLOAT4 color )
 
 	AddBind( std::make_shared<TransformCbuf>( gfx,*this,0u ) );
 
-	AddBind(std::make_shared<Blender>( gfx,true,0.5f ) );
+	AddBind(std::make_shared<Blender>( gfx,true,1.0f ) );
 	
 	AddBind( Rasterizer::Resolve( gfx,false ) );
 }

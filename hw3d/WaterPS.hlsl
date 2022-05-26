@@ -13,6 +13,7 @@ cbuffer CBuf : register(b1)
 {
 	float3 cameraPosition;
 	float time;
+	float2 viewportSize;
 };
 
 struct WaveParameters
@@ -30,7 +31,9 @@ SamplerState splr;
 
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent, float2 tc : Texcoord) : SV_Target
 {
-	return float4(worldTexture.Sample(splr, Position * 0.003).rgb, 1);
+	float2 screenPosition = Position.xy / viewportSize;
+
+	return float4(worldTexture.Sample(splr, screenPosition).rgb, 1);
 
 	const float3x3 tanToTarget = float3x3(normalize(Tangent), normalize(Normal), normalize(BiTangent));
 	float3 normalMap1 = tex.Sample(splr, WorldPosition.xz * 0.01f + float2(time * 0.00001f, -time * 0.00002f)).rbg * 2 - 1;

@@ -11,6 +11,10 @@ namespace Bind
 		{
 			DirectX::XMFLOAT3 cameraPosition;
 			float time;
+			float width;
+			float height;
+			float padding;
+			float padding2;
 		};
 	public:
 		WaterPixelCbuf(Graphics& gfx, const Drawable& parent, UINT slot = 0u);
