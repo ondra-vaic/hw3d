@@ -1,6 +1,7 @@
 #include "Water.h"
 #include "Plane.h"
 #include "BindableCommon.h"
+#include "RenderTexture.h"
 #include "Stencil.h"
 #include "imgui/imgui.h"
 #include "TransformCbufDoubleboi.h"
@@ -22,7 +23,6 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 
 	AddBind(Texture::Resolve(gfx, "Images\\waterNormal3.png"));
 	AddBind(Sampler::Resolve(gfx));
-	//AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal.jpg", 1u));
 
 	auto pvs = VertexShader::Resolve(gfx, "WaterVS.cso");
 	auto pvsbc = pvs->GetBytecode();
@@ -82,4 +82,9 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		pBlender->SetFactor(factor);
 	}
 	ImGui::End();
+}
+
+void Water::SetWorldTexture(Graphics& gfx, ID3D11ShaderResourceView* worldTextureResource)
+{
+	gfx.GetDeviceContext()->PSSetShaderResources(1, 1u, &worldTextureResource);
 }

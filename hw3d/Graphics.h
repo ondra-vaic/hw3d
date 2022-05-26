@@ -75,9 +75,18 @@ public:
 	void EnableImgui() noexcept;
 	void DisableImgui() noexcept;
 	bool IsImguiEnabled() const noexcept;
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetDeviceContext();
+	ID3D11DepthStencilView* GetDepthStencilView();
+	int GetViewportWidth();
+	int GetViewportHeight();
+	void SetBackBufferRenderTarget();
+
 private:
 	DirectX::XMMATRIX projection;
 	Camera camera;
+	int viewportWidth;
+	int viewportHeight;
 
 	bool imguiEnabled = true;
 #ifndef NDEBUG

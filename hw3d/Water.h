@@ -1,6 +1,8 @@
 #pragma once
 #include "Drawable.h"
 
+class RenderTexture;
+
 class Water : public Drawable
 {
 public:
@@ -9,7 +11,10 @@ public:
 	void SetRotation(float roll, float pitch, float yaw) noexcept;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;
 	void SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept;
+	void SetWorldTexture(Graphics& gfx, ID3D11ShaderResourceView* worldTextureResource);
+
 private:
+
 	struct PSMaterialConstant
 	{
 		DirectX::XMFLOAT4 color;

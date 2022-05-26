@@ -19,6 +19,9 @@ namespace dx = DirectX;
 
 Graphics::Graphics( HWND hWnd,int width,int height )
 {
+	viewportWidth = width;
+	viewportHeight = height;
+
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
@@ -194,6 +197,36 @@ void Graphics::DisableImgui() noexcept
 bool Graphics::IsImguiEnabled() const noexcept
 {
 	return imguiEnabled;
+}
+
+ID3D11Device* Graphics::GetDevice()
+{
+	return pDevice.Get();
+}
+
+ID3D11DeviceContext* Graphics::GetDeviceContext()
+{
+	return pContext.Get();
+}
+
+ID3D11DepthStencilView* Graphics::GetDepthStencilView()
+{
+	return pDSV.Get();
+}
+
+int Graphics::GetViewportWidth()
+{
+	return viewportWidth;
+}
+
+int Graphics::GetViewportHeight()
+{
+	return viewportHeight;
+}
+
+void Graphics::SetBackBufferRenderTarget()
+{
+	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
 }
 
 
