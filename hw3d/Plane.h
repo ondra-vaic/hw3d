@@ -41,7 +41,9 @@ public:
 					vb.EmplaceBack(
 						dx::XMFLOAT3{ x_pos,y_pos,0.0f },
 						dx::XMFLOAT3{ 0.0f,0.0f,-1.0f },
-						dx::XMFLOAT2{ x_pos_tc,y_pos_tc }
+						dx::XMFLOAT2{ x_pos_tc,y_pos_tc },
+						dx::XMFLOAT3{ 1, 0, 0 },
+						dx::XMFLOAT3{ 0, -1, 0 }
 					);
 				}
 			}
@@ -79,6 +81,8 @@ public:
 		vl.Append( VertexLayout::Position3D );
 		vl.Append( VertexLayout::Normal );
 		vl.Append( VertexLayout::Texture2D );
+		vl.Append( VertexLayout::Tangent );
+		vl.Append( VertexLayout::Bitangent );
 
 		return MakeTesselatedTextured( std::move( vl ),100,100 );
 	}

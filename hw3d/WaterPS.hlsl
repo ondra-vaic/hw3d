@@ -33,8 +33,6 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 {
 	float2 screenPosition = Position.xy / viewportSize;
 
-	return float4(worldTexture.Sample(splr, screenPosition).rgb, 1);
-
 	const float3x3 tanToTarget = float3x3(normalize(Tangent), normalize(Normal), normalize(BiTangent));
 	float3 normalMap1 = tex.Sample(splr, WorldPosition.xz * 0.01f + float2(time * 0.00001f, -time * 0.00002f)).rbg * 2 - 1;
 	normalMap1.x *= -1;
@@ -45,6 +43,8 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	float3 totalNormal = lerp(normalMap2, normalMap1, smoothstep(-2.7f, 2.7f, WorldPosition.y));
 
 	float3 normal = normalize(mul(totalNormal, tanToTarget));
+
+	float3 refraction = float4(worldTexture.Sample(splr, screenPosition + normal.rb * 0.01f).rgb, 1);
 
 	float3 lightDirection = normalize(lightPos - WorldPosition);
 	float3 lightColor = float3(0.7, 0.83, 0.93);
@@ -62,5 +62,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	float3 diffuseTotal = lightColor * diffuse * diffuseIntensity;
 
-	return float4((diffuseTotal + ambient) * waterColorTotal + specular, 1);
+	float3 waterColorShaded = (diffuseTotal + ambient) * waterColorTotal;
+
+	return float4(refraction + waterColorShaded + specular, 1);
 }
