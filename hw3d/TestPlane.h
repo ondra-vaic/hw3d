@@ -13,7 +13,11 @@ private:
 	struct PSMaterialConstant
 	{
 		DirectX::XMFLOAT4 color;
+		float specularIntensity;
+		float specularPower;
+		float padding[2];
 	} pmc;
+
 	DirectX::XMFLOAT3 pos = { 0.0f,0.0f,0.0f };
 	float roll = 0.0f;
 	float pitch = 0.0f;

@@ -19,10 +19,12 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float2 tc
 {
     // renormalize interpolated normal
     viewNormal = normalize(viewNormal);
+
 	// fragment to light vector data
     const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
 	// attenuation
-    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
+    const float att = 1.0f / (attConst + attLin * lv.distToL + attQuad * (lv.distToL * lv.distToL));
+    
 	// diffuse
     const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, viewNormal);
 	// specular
