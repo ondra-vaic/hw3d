@@ -10,7 +10,7 @@
 
 Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	:
-	pmc({ color })
+	pmc({ color }), drawMask(false)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
@@ -28,7 +28,8 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	auto pvsbc = pvs->GetBytecode();
 	AddBind(std::move(pvs));
 
-	AddBind(PixelShader::Resolve(gfx, "WaterPS.cso"));
+	waterShader =  PixelShader::Resolve(gfx, "WaterPS.cso");
+	maskShader = PixelShader::Resolve(gfx, "WaterMaskPS.cso");
 
 	AddBind(std::make_shared<WaterPixelCbuf>(gfx, *this, 1u));
 
@@ -40,7 +41,7 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 
 	AddBind(std::make_shared<WaterCbuf>(gfx, *this, 0u));
 
-	AddBind(std::make_shared<Blender>(gfx, true, 1.0f));
+	blender = std::make_shared<Blender>(gfx, true, 1.f);
 
 	AddBind(Rasterizer::Resolve(gfx, false));
 }
@@ -76,15 +77,46 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("Shading");
-		auto pBlender = QueryBindable<Bind::Blender>();
-		float factor = pBlender->GetFactor();
+
+		/*
+		 *
+		float factor = blender->GetFactor();
 		ImGui::SliderFloat("Translucency", &factor, 0.0f, 1.0f);
-		pBlender->SetFactor(factor);
+		blender->SetFactor(factor);
+		
+		 */
 	}
 	ImGui::End();
 }
 
-void Water::SetWorldTexture(Graphics& gfx, ID3D11ShaderResourceView* worldTextureResource)
+void Water::SetWorldTexture(ID3D11ShaderResourceView* worldTextureResource)
 {
-	gfx.GetDeviceContext()->PSSetShaderResources(1, 1u, &worldTextureResource);
+	this->worldTextureResource = worldTextureResource;
+}
+
+void Water::Draw(Graphics& gfx) const noexcept(!true)
+{
+	if (drawMask)
+	{
+		blender->Bind(gfx);
+		maskShader->Bind(gfx);
+	}
+	else
+	{
+		blender->Bind(gfx);
+		waterShader->Bind(gfx);
+	}
+
+	if(worldTextureResource)
+	{
+		gfx.GetDeviceContext()->PSSetShaderResources(1, 1u, &worldTextureResource);
+	}
+
+	Drawable::Draw(gfx);
+}
+
+void Water::SetDrawMask(bool drawMask)
+{
+	blender->SetFactor(!drawMask);
+	this->drawMask = drawMask;
 }

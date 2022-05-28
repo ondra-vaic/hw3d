@@ -22,8 +22,9 @@ App::App( const std::string& commandLine )
 	light = new PointLight(wnd.Gfx());
 	ground = new TestPlane{ wnd.Gfx(), 50.0f, { 0.6f,0.6f,0.6f,1 } };
 
-	scene.emplace_back(water);
 	scene.emplace_back(ground);
+
+	scene.emplace_back(water);
 
 	worldTexture = new RenderTexture();
 	worldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
@@ -36,19 +37,17 @@ App::App( const std::string& commandLine )
 }
 
 
-void App::Render(bool ignoreWater)
+void App::Render(bool ignoreUi)
 {
 	light->Bind(wnd.Gfx(), cam.GetMatrix());
 
 	light->Draw(wnd.Gfx());
 	for (auto drawable : scene)
 	{
-		if(ignoreWater && drawable == water) continue;
-
 		drawable->Draw(wnd.Gfx());
 	}
 
-	if(!ignoreWater)
+	if(!ignoreUi)
 	{
 		// imgui windows
 		cam.SpawnControlWindow();
@@ -64,7 +63,10 @@ void App::RenderToTexture()
 	// first pass
 	worldTexture->SetRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView());
 	worldTexture->ClearRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	water->SetDrawMask(true);
 	Render(true);
+	water->SetDrawMask(false);
+	water->SetWorldTexture(worldTexture->GetShaderResourceView());
 	wnd.Gfx().SetBackBufferRenderTarget();
 }
 
@@ -76,8 +78,6 @@ void App::DoFrame()
 	RenderToTexture();
 
 	wnd.Gfx().BeginFrame(0.07f, 0.0f, 0.12f);
-	water->SetWorldTexture(wnd.Gfx(), worldTexture->GetShaderResourceView());
-
 	Render(false);
 	wnd.Gfx().EndFrame();
 

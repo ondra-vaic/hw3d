@@ -22,7 +22,7 @@ public:
 private:
 	void DoFrame();
 	void ShowImguiDemoWindow();
-	void Render(bool ignoreWater);
+	void Render(bool ignoreUi);
 	void RenderToTexture();
 private:
 	std::string commandLine;

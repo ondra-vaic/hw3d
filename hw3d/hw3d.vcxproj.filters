@@ -484,5 +484,8 @@
     <FxCompile Include="WaterVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="WaterMaskPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
