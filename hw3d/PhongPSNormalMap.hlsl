@@ -11,7 +11,7 @@ cbuffer ObjectCBuf
     float padding[1];
 };
 
-Texture2D tex;
+Texture2D normalMap;
 Texture2D nmap : register(t1);
 
 SamplerState splr;
@@ -34,5 +34,5 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float3 vi
     );
 
 	// final color
-    return float4(saturate((diffuse + ambient) * tex.Sample(splr, tc).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + ambient) * normalMap.Sample(splr, tc).rgb + specular), 1.0f);
 }

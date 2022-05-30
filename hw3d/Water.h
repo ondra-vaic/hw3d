@@ -12,14 +12,17 @@ class Water : public Drawable
 {
 public:
 	Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,0.0f });
+
+	void Draw(Graphics& gfx) const noxnd;
+
 	void SetPos(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;
 	void SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept;
 	void SetWorldTexture(ID3D11ShaderResourceView* worldTextureResource);
-	void Draw(Graphics& gfx) const noxnd;
-
+	void SetReflectedWorldTexture(ID3D11ShaderResourceView* reflectedWorldTextureResource);
 	void SetDrawMask(bool drawMask);
+	float GetY() const;
 
 private:
 
@@ -38,6 +41,8 @@ private:
 	bool drawMask;
 
 	ID3D11ShaderResourceView* worldTextureResource;
+	ID3D11ShaderResourceView* reflectedWorldTextureResource;
+
 	std::shared_ptr<Bind::Bindable> waterShader;
 	std::shared_ptr<Bind::Bindable> maskShader;
 	std::shared_ptr<Bind::Blender> blender;

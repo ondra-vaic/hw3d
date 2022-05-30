@@ -23,7 +23,7 @@ private:
 	void DoFrame();
 	void ShowImguiDemoWindow();
 	void Render(bool ignoreUi);
-	void RenderToTexture();
+	void RenderToTexture(RenderTexture* renderTexture);
 private:
 	std::string commandLine;
 	bool showDemoWindow = false;
@@ -36,8 +36,10 @@ private:
 	PointLight* light;
 	Water* water; //{ wnd.Gfx(),50.0f,{ 0.3f,0.3f,1.0f,0.5f } };
 	TestPlane* ground; // { wnd.Gfx(), 50.0f, { 0.6f,0.6f,0.6f,1 } };
+	TestCube* cube;
 
 	RenderTexture* worldTexture;
+	RenderTexture* reflectedWorldTexture;
 	std::vector<Drawable*> scene;
 
 	//Model sponza{ wnd.Gfx(),"Models\\sponza\\sponza.obj",1.0f / 20.0f };

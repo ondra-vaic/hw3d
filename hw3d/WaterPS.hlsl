@@ -16,8 +16,9 @@ cbuffer CBuf : register(b1)
 	float2 viewportSize;
 };
 
-Texture2D tex;
+Texture2D normalMap;
 Texture2D worldTexture : register(t1);
+Texture2D reflectedWorldTexture : register(t2);
 
 SamplerState splr;
 
@@ -33,11 +34,13 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	const float2 screenPosition = Position.xy / viewportSize;
 
+	return reflectedWorldTexture.Sample(splr, screenPosition);
+
 	const float3x3 tanToTarget = float3x3(normalize(Tangent), normalize(Normal), normalize(BiTangent));
-	float3 normalMap1 = tex.Sample(splr, WorldPosition.xz * 0.01f + float2(time * 0.00001f, -time * 0.00002f)).rbg * 2 - 1;
+	float3 normalMap1 = normalMap.Sample(splr, WorldPosition.xz * 0.01f + float2(time * 0.00001f, -time * 0.00002f)).rbg * 2 - 1;
 	normalMap1.x *= -1;
 
-	float3 normalMap2 = tex.Sample(splr, 0.351f + WorldPosition.xz * 0.005f + float2(time * 0.000007f, -time * 0.00001f)).rbg * 2 - 1;
+	float3 normalMap2 = normalMap.Sample(splr, 0.351f + WorldPosition.xz * 0.005f + float2(time * 0.000007f, -time * 0.00001f)).rbg * 2 - 1;
 	normalMap2.x *= -1;
 
 	const float3 totalNormal = lerp(normalMap2, normalMap1, smoothstep(-2.7f, 2.7f, WorldPosition.y));

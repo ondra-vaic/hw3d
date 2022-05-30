@@ -44,6 +44,67 @@ public:
 		vertices[22].Attr<Type::Position3D>() = { -side,side,side };// 22
 		vertices[23].Attr<Type::Position3D>() = { side,side,side };// 23
 
+
+		vertices[0].Attr<Type::Tangent>() = { 1, 0.0f,0.0f }; // 0 near side
+		vertices[1].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+		vertices[2].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+		vertices[3].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+
+		vertices[4].Attr<Type::Tangent>() = { 1, 0.0f,0.0f }; // 4 far side
+		vertices[5].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+		vertices[6].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+		vertices[7].Attr<Type::Tangent>() = { 1, 0.0f,0.0f };
+
+		vertices[8].Attr<Type::Tangent>() = { 0, 1.0f,0.0f }; // 8 left side
+		vertices[9].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+		vertices[10].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+		vertices[11].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+
+		vertices[12].Attr<Type::Tangent>() = { 0, 1.0f,0.0f }; // 12 right side
+		vertices[13].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+		vertices[14].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+		vertices[15].Attr<Type::Tangent>() = { 0, 1.0f,0.0f };
+
+		vertices[16].Attr<Type::Tangent>() = { 1, 0.0f,0}; // 16 bottom side
+		vertices[17].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+		vertices[18].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+		vertices[19].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+
+		vertices[20].Attr<Type::Tangent>() = { 1, 0.0f,0 }; // 20 top side
+		vertices[21].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+		vertices[22].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+		vertices[23].Attr<Type::Tangent>() = { 1, 0.0f,0 };
+
+		vertices[0].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f }; // 0 near side
+		vertices[1].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+		vertices[2].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+		vertices[3].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+
+		vertices[4].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f }; // 4 far side
+		vertices[5].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+		vertices[6].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+		vertices[7].Attr<Type::Bitangent>() = { 0, 1.0f,0.0f };
+
+		vertices[8].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f }; // 8 left side
+		vertices[9].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[10].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[11].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+
+		vertices[12].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f }; // 12 right side
+		vertices[13].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[14].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[15].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+
+		vertices[16].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f }; // 16 bottom side
+		vertices[17].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[18].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[19].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+
+		vertices[20].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f }; // 20 top side
+		vertices[21].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[22].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+		vertices[23].Attr<Type::Bitangent>() = { 0, 0.0f,1.0f };
+
 		return{
 			std::move( vertices ),{
 				0,2, 1,    2,3,1,
@@ -63,6 +124,8 @@ public:
 		auto itl = MakeIndependent( std::move( VertexLayout{}
 			.Append( Type::Position3D )
 			.Append( Type::Normal )
+			.Append(Type::Tangent)
+			.Append(Type::Bitangent)
 			.Append( Type::Texture2D )
 		) );
 

@@ -13,7 +13,7 @@ cbuffer ObjectCBuf
     float specularMapWeight;
 };
 
-Texture2D tex;
+Texture2D normalMap;
 Texture2D spec;
 Texture2D nmap;
 
@@ -23,7 +23,7 @@ SamplerState splr;
 float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float3 viewTan : Tangent, float3 viewBitan : Bitangent, float2 tc : Texcoord) : SV_Target
 {
     // sample diffuse texture
-    float4 dtex = tex.Sample(splr, tc);
+    float4 dtex = normalMap.Sample(splr, tc);
 
     #ifdef MASK_BOI
     // bail if highly translucent

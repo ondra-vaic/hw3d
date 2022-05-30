@@ -1,7 +1,6 @@
 #include "TestPlane.h"
 #include "Plane.h"
 #include "BindableCommon.h"
-#include "Stencil.h"
 #include "imgui/imgui.h"
 #include "TransformCbufDoubleboi.h"
 

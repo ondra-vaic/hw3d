@@ -1,7 +1,5 @@
 #include "Camera.h"
-
 #include <algorithm>
-
 #include "imgui/imgui.h"
 #include "ChiliMath.h"
 
@@ -18,13 +16,21 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 
 	const dx::XMVECTOR forwardBaseVector = XMVectorSet( 0.0f,0.0f,1.0f,0.0f );
 	// apply the cameraTransform rotations to a base vector
-	const auto lookVector = XMVector3Transform( forwardBaseVector,
+	auto lookVector = XMVector3Transform( forwardBaseVector,
 		XMMatrixRotationRollPitchYaw( pitch,yaw,0.0f )
 	);
+
 	// generate cameraTransform transform (applied to all objects to arrange them relative
 	// to cameraTransform position/orientation in world) from cam position and direction
 	// cameraTransform "top" always faces towards +Y (cannot do a barrel roll)
-	const auto camPosition = XMLoadFloat3( &pos );
+	auto camPosition = XMLoadFloat3( &pos );
+
+	if (isReflected)
+	{
+		lookVector = XMVectorSetY(lookVector, XMVectorGetY(lookVector) * -1);
+		camPosition = XMVectorSetY(camPosition, reflectionPlaneY * 2 - XMVectorGetY(camPosition));
+	}
+
 	const auto camTarget = camPosition + lookVector;
 	return XMMatrixLookAtLH( camPosition,camTarget,XMVectorSet( 0.0f,1.0f,0.0f,0.0f ) );
 }
@@ -50,8 +56,8 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset() noexcept
 {
-	pos = { 0, 50, -50};
-	pitch = 0.6f;
+	pos = { 0, 35, -42};
+	pitch = 0.4f;
 	yaw = 0.0f;
 }
 
@@ -73,6 +79,16 @@ void Camera::Translate( DirectX::XMFLOAT3 translation ) noexcept
 		pos.y + translation.y,
 		pos.z + translation.z
 	};
+}
+
+void Camera::SetIsReflected(bool isReflected) noexcept
+{
+	this->isReflected = isReflected;
+}
+
+void Camera::SetReflectionPlaneY(float reflectionPlaneY) noexcept
+{
+	this->reflectionPlaneY = reflectionPlaneY;
 }
 
 DirectX::XMFLOAT3 Camera::GetPos() const noexcept

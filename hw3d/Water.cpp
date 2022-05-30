@@ -94,6 +94,11 @@ void Water::SetWorldTexture(ID3D11ShaderResourceView* worldTextureResource)
 	this->worldTextureResource = worldTextureResource;
 }
 
+void Water::SetReflectedWorldTexture(ID3D11ShaderResourceView* reflectedWorldTextureResource)
+{
+	this->reflectedWorldTextureResource = reflectedWorldTextureResource;
+}
+
 void Water::Draw(Graphics& gfx) const noexcept(!true)
 {
 	if (drawMask)
@@ -112,6 +117,11 @@ void Water::Draw(Graphics& gfx) const noexcept(!true)
 		gfx.GetDeviceContext()->PSSetShaderResources(1, 1u, &worldTextureResource);
 	}
 
+	if (reflectedWorldTextureResource)
+	{
+		gfx.GetDeviceContext()->PSSetShaderResources(2, 1u, &reflectedWorldTextureResource);
+	}
+
 	Drawable::Draw(gfx);
 }
 
@@ -119,4 +129,9 @@ void Water::SetDrawMask(bool drawMask)
 {
 	blender->SetFactor(!drawMask);
 	this->drawMask = drawMask;
+}
+
+float Water::GetY() const
+{
+	return pos.y;
 }

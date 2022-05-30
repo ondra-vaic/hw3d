@@ -17,14 +17,15 @@ TestCube::TestCube( Graphics& gfx,float size )
 	AddBind( VertexBuffer::Resolve( gfx,geometryTag,model.vertices ) );
 	AddBind( IndexBuffer::Resolve( gfx,geometryTag,model.indices ) );
 
-	AddBind( Texture::Resolve( gfx,"Images\\brickwall.jpg" ) );
+	AddBind(Texture::Resolve(gfx, "Images\\brickwall.jpg"));
+	AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal.jpg", 1));
 	AddBind( Sampler::Resolve( gfx ) );
 
-	auto pvs = VertexShader::Resolve( gfx,"PhongVS.cso" );
+	auto pvs = VertexShader::Resolve( gfx,"PhongVSNormalMap.cso" );
 	auto pvsbc = pvs->GetBytecode();
 	AddBind( std::move( pvs ) );
 
-	AddBind( PixelShader::Resolve( gfx,"PhongPS.cso" ) );
+	AddBind( PixelShader::Resolve( gfx,"PhongPSNormalMap.cso" ) );
 
 	AddBind( PixelConstantBuffer<PSMaterialConstant>::Resolve( gfx,pmc,1u ) );
 
@@ -34,25 +35,6 @@ TestCube::TestCube( Graphics& gfx,float size )
 
 	auto tcbdb = std::make_shared<TransformCbufDoubleboi>( gfx,*this,0u,2u );
 	AddBind( tcbdb );
-
-	AddBind( std::make_shared<Stencil>( gfx,Stencil::Mode::Write ) );
-
-
-	outlineEffect.push_back( VertexBuffer::Resolve( gfx,geometryTag,model.vertices ) );
-	outlineEffect.push_back( IndexBuffer::Resolve( gfx,geometryTag,model.indices ) );	   
-	pvs = VertexShader::Resolve( gfx,"SolidVS.cso" );
-	pvsbc = pvs->GetBytecode();
-	outlineEffect.push_back( std::move( pvs ) );
-	outlineEffect.push_back( PixelShader::Resolve( gfx,"SolidPS.cso" ) );
-	struct SolidColorBuffer
-	{
-		DirectX::XMFLOAT4 color = { 1.0f,0.4f,0.4f,1.0f };
-	} scb;
-	outlineEffect.push_back( PixelConstantBuffer<SolidColorBuffer>::Resolve( gfx,scb,1u ) );
-	outlineEffect.push_back( InputLayout::Resolve( gfx,model.vertices.GetLayout(),pvsbc ) );
-	outlineEffect.push_back( Topology::Resolve( gfx,D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
-	outlineEffect.push_back( std::move( tcbdb ) );
-	outlineEffect.push_back( std::make_shared<Stencil>( gfx,Stencil::Mode::Mask ) );
 }
 
 void TestCube::SetPos( DirectX::XMFLOAT3 pos ) noexcept
@@ -71,10 +53,6 @@ DirectX::XMMATRIX TestCube::GetTransformXM() const noexcept
 {
 	auto xf = DirectX::XMMatrixRotationRollPitchYaw( roll,pitch,yaw ) *
 		DirectX::XMMatrixTranslation( pos.x,pos.y,pos.z );
-	if( outlining )
-	{
-		xf = DirectX::XMMatrixScaling( 1.03f,1.03f,1.03f ) * xf;
-	}
 	return xf;
 }
 
