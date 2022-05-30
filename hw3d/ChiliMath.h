@@ -37,3 +37,8 @@ constexpr T to_rad( T deg )
 {
 	return deg * PI / (T)180.0;
 }
+
+inline float sign(float num)
+{
+	return static_cast<float>(copysign(1, num));
+}

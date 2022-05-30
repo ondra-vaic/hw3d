@@ -30,9 +30,9 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 		lookVector = XMVectorSetY(lookVector, XMVectorGetY(lookVector) * -1);
 		camPosition = XMVectorSetY(camPosition, reflectionPlaneY * 2 - XMVectorGetY(camPosition));
 	}
-
+	
 	const auto camTarget = camPosition + lookVector;
-	return XMMatrixLookAtLH( camPosition,camTarget,XMVectorSet( 0.0f,1.0f,0.0f,0.0f ) );
+	return XMMatrixLookAtLH(camPosition, camTarget, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 }
 
 void Camera::SpawnControlWindow() noexcept

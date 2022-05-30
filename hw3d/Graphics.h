@@ -60,7 +60,7 @@ public:
 		std::string reason;
 	};
 public:
-	Graphics( HWND hWnd,int width,int height );
+	Graphics( HWND hWnd,int width,int height);
 	Graphics( const Graphics& ) = delete;
 	Graphics& operator=( const Graphics& ) = delete;
 	~Graphics();
@@ -81,8 +81,11 @@ public:
 	int GetViewportWidth();
 	int GetViewportHeight();
 	void SetBackBufferRenderTarget();
+	void SetObliqueClippingPlane(float planeY);
+	void SetStandardProjection();
 
 private:
+	DirectX::XMMATRIX standardProjection;
 	DirectX::XMMATRIX projection;
 	Camera camera;
 	int viewportWidth;

@@ -20,7 +20,7 @@ App::App( const std::string& commandLine )
 	light(new PointLight(wnd.Gfx())),
 	water(new Water{wnd.Gfx(), 50.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
 	ground(new TestPlane{wnd.Gfx(), 50.0f, {0.6f, 0.6f, 0.6f, 1}}),
-	cube(new TestCube(wnd.Gfx(), 10)),
+	cube(new TestCube(wnd.Gfx(), 25)),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture())
 {
@@ -38,7 +38,8 @@ App::App( const std::string& commandLine )
 	water->SetRotation(PI / 2, PI, 0);
 	ground->SetPos({ 0, -10, 50 });
 	ground->SetRotation(PI / 2, 0, 0);
-	wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,400.0f ) );
+
+	//wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,400.0f ) );
 }
 
 
@@ -81,12 +82,14 @@ void App::DoFrame()
 	cam.SetReflectionPlaneY(water->GetY());
 	cam.SetIsReflected(true);
 	wnd.Gfx().SetCamera(cam);
+	wnd.Gfx().SetObliqueClippingPlane(water->GetY());
 
 	RenderToTexture(reflectedWorldTexture);
 	water->SetReflectedWorldTexture(reflectedWorldTexture->GetShaderResourceView());
 
 	cam.SetIsReflected(false);
 	wnd.Gfx().SetCamera(cam);
+	wnd.Gfx().SetStandardProjection();
 
 	RenderToTexture(worldTexture);
 	water->SetWorldTexture(worldTexture->GetShaderResourceView());

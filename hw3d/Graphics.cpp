@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #include <cmath>
 #include <DirectXMath.h>
+#include "ChiliMath.h"
 
 #include "Camera.h"
 #include "GraphicsThrowMacros.h"
@@ -17,10 +18,12 @@ namespace dx = DirectX;
 #pragma comment(lib,"D3DCompiler.lib")
 
 
-Graphics::Graphics( HWND hWnd,int width,int height )
+Graphics::Graphics( HWND hWnd,int width,int height)
 {
 	viewportWidth = width;
 	viewportHeight = height;
+	standardProjection = dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 400.0f);
+	projection = standardProjection;
 
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = width;
@@ -227,6 +230,49 @@ int Graphics::GetViewportHeight()
 void Graphics::SetBackBufferRenderTarget()
 {
 	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
+}
+
+void Graphics::SetObliqueClippingPlane(float planeY)
+{
+	DirectX::XMFLOAT4X4 projectionMatrixFloats{};
+	XMStoreFloat4x4(&projectionMatrixFloats, standardProjection);
+
+	float matrix0 = projectionMatrixFloats._11;
+	float matrix5 = projectionMatrixFloats._22;
+	float matrix8 = projectionMatrixFloats._31;
+	float matrix9 = projectionMatrixFloats._32;
+	float matrix10 = projectionMatrixFloats._33;
+	float matrix14 = projectionMatrixFloats._43;
+
+	DirectX::XMVECTOR planeNormal = DirectX::XMVector3TransformNormal({ 0, 1, 0 }, camera.GetMatrix());
+	DirectX::XMVECTOR planePoint = DirectX::XMVector3Transform({ 0, planeY, 0 }, camera.GetMatrix());
+
+	DirectX::XMVECTOR plane = DirectX::XMPlaneFromPointNormal(planePoint, planeNormal);
+
+	DirectX::XMFLOAT4 planeFloats{};
+	DirectX::XMStoreFloat4(&planeFloats, plane);
+	
+	DirectX::XMVECTOR q{0, 0, 0, 0};
+	q = DirectX::XMVectorSetX(q, (sign(planeFloats.x) + matrix8) / matrix0);
+	q = DirectX::XMVectorSetY(q, (sign(planeFloats.y) + matrix9) / matrix5);
+	q = DirectX::XMVectorSetZ(q, -1);
+	q = DirectX::XMVectorSetW(q, (1.f + matrix10) / matrix14);
+
+	float scale = 1.0f / DirectX::XMVectorGetX(DirectX::XMPlaneDot(plane, q));
+
+	DirectX::XMVECTOR c = DirectX::XMVectorScale(plane, scale);
+
+	projectionMatrixFloats._13 = DirectX::XMVectorGetX(c);
+	projectionMatrixFloats._23 = DirectX::XMVectorGetY(c);
+	projectionMatrixFloats._33 = DirectX::XMVectorGetZ(c);
+	projectionMatrixFloats._43 = DirectX::XMVectorGetW(c);
+
+	projection = DirectX::XMLoadFloat4x4(&projectionMatrixFloats);
+}
+
+void Graphics::SetStandardProjection()
+{
+	projection = standardProjection;
 }
 
 
