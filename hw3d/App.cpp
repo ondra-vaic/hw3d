@@ -17,9 +17,8 @@ App::App( const std::string& commandLine )
 	commandLine( commandLine ),
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
-	light(new PointLight(wnd.Gfx())),
-	water(new Water{wnd.Gfx(), 50.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
-	ground(new TestPlane{wnd.Gfx(), 50.0f, {0.6f, 0.6f, 0.6f, 1}}),
+	light(new LightData(wnd.Gfx())),
+	water(new Water{wnd.Gfx(), 250.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
 	cube(new TestCube(wnd.Gfx(), 25)),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture())
@@ -27,19 +26,26 @@ App::App( const std::string& commandLine )
 	TestDynamicConstant();
 	cube->SetPos({ 0, 15, 45});
 
-	scene.emplace_back(ground);
+	createPool();
 	scene.emplace_back(cube);
 	scene.emplace_back(water);
 
 	worldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 	reflectedWorldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 
-	water->SetPos( {0, 0, 50} );
+	water->SetPos( {0, 0, 0} );
 	water->SetRotation(PI / 2, PI, 0);
-	ground->SetPos({ 0, -10, 50 });
-	ground->SetRotation(PI / 2, 0, 0);
-
 	//wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,400.0f ) );
+}
+
+void App::createPool()
+{
+	TestPlane* ground = new TestPlane{ wnd.Gfx(), 38.0f };
+
+	ground->SetPos({ 0, 0, 0 });
+	ground->SetRotation(PI / 2 + 0.15f, 0, 0);
+
+	scene.emplace_back(ground);
 }
 
 
@@ -60,15 +66,14 @@ void App::Render(bool ignoreUi)
 		light->SpawnControlWindow();
 		ShowImguiDemoWindow();
 		water->SpawnControlWindow(wnd.Gfx(), "Water");
-		ground->SpawnControlWindow(wnd.Gfx(), "Ground");
 		cube->SpawnControlWindow(wnd.Gfx(), "Cube");
 	}
 }
 
-void App::RenderToTexture(RenderTexture* renderTexture)
+void App::RenderToTexture(RenderTexture* renderTexture, float alphaClear)
 {
 	renderTexture->SetRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView());
-	renderTexture->ClearRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	renderTexture->ClearRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView(), 0, 0, 0, alphaClear);
 	Render(true);
 	wnd.Gfx().SetBackBufferRenderTarget();
 }
@@ -84,19 +89,19 @@ void App::DoFrame()
 	wnd.Gfx().SetCamera(cam);
 	wnd.Gfx().SetObliqueClippingPlane(water->GetY());
 
-	RenderToTexture(reflectedWorldTexture);
+	RenderToTexture(reflectedWorldTexture, 0);
 	water->SetReflectedWorldTexture(reflectedWorldTexture->GetShaderResourceView());
 
 	cam.SetIsReflected(false);
 	wnd.Gfx().SetCamera(cam);
 	wnd.Gfx().SetStandardProjection();
 
-	RenderToTexture(worldTexture);
+	RenderToTexture(worldTexture, 1);
 	water->SetWorldTexture(worldTexture->GetShaderResourceView());
 
 	water->SetDrawMask(false);
 
-	wnd.Gfx().BeginFrame(0.07f, 0.0f, 0.12f);
+	wnd.Gfx().BeginFrame(0.23f, 0.67f, 0.98f);
 	Render(false);
 	wnd.Gfx().EndFrame();
 

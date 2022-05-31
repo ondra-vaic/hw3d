@@ -124,7 +124,7 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="LayoutCodex.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <FxCompile Include="LightVectorData.hlsl">
+    <FxCompile Include="PointLightVectorData.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
@@ -141,7 +141,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="LightData.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
@@ -252,7 +252,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="LightData.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="resource.h" />

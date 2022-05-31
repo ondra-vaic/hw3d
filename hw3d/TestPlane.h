@@ -4,7 +4,7 @@
 class TestPlane : public Drawable
 {
 public:
-	TestPlane( Graphics& gfx,float size,DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,0.0f } );
+	TestPlane( Graphics& gfx,float size);
 	void SetPos( DirectX::XMFLOAT3 pos ) noexcept;
 	void SetRotation( float roll,float pitch,float yaw ) noexcept;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;
@@ -12,7 +12,6 @@ public:
 private:
 	struct PSMaterialConstant
 	{
-		DirectX::XMFLOAT4 color;
 		float specularIntensity;
 		float specularPower;
 		float padding[2];

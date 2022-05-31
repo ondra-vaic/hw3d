@@ -138,9 +138,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SolidSphere.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="RenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -320,9 +320,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -410,6 +407,9 @@
     <ClInclude Include="RenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LightData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hw3d.rc">
@@ -469,9 +469,6 @@
     <FxCompile Include="Transform.hlsl">
       <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="LightVectorData.hlsl">
-      <Filter>Shader\Common</Filter>
-    </FxCompile>
     <FxCompile Include="PhongPSSpec.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -486,6 +483,9 @@
     </FxCompile>
     <FxCompile Include="WaterMaskPS.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PointLightVectorData.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

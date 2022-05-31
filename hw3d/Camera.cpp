@@ -40,9 +40,9 @@ void Camera::SpawnControlWindow() noexcept
 	if( ImGui::Begin( "Camera" ) )
 	{
 		ImGui::Text( "Position" );
-		ImGui::SliderFloat( "X",&pos.x,-80.0f,80.0f,"%.1f" );
-		ImGui::SliderFloat( "Y",&pos.y,-80.0f,80.0f,"%.1f" );
-		ImGui::SliderFloat( "Z",&pos.z,-80.0f,80.0f,"%.1f" );
+		ImGui::SliderFloat( "X",&pos.x,-100.0f, 100.0f,"%.1f" );
+		ImGui::SliderFloat( "Y",&pos.y,-100.0f, 100.0f,"%.1f" );
+		ImGui::SliderFloat( "Z",&pos.z,-100.0f, 100.0f,"%.1f" );
 		ImGui::Text( "Orientation" );
 		ImGui::SliderAngle( "Pitch",&pitch,0.995f * -90.0f,0.995f * 90.0f );
 		ImGui::SliderAngle( "Yaw",&yaw,-180.0f,180.0f );
@@ -56,8 +56,8 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset() noexcept
 {
-	pos = { 0, 35, -42};
-	pitch = 0.4f;
+	pos = { 0, 8.3f, -26.1f};
+	pitch = 0.14f;
 	yaw = 0.0f;
 }
 

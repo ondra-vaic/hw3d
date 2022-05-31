@@ -1,5 +1,5 @@
 #include "ShaderOps.hlsl"
-#include "LightVectorData.hlsl"
+#include "PointLightVectorData.hlsl"
 
 #include "PointLight.hlsl"
 
@@ -43,7 +43,7 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float3 vi
         viewNormal = MapNormal(normalize(viewTan), normalize(viewBitan), viewNormal, tc, nmap, splr);
     }
 	// fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
+    const PointLightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
     // specular parameter determination (mapped or uniform)
     float3 specularReflectionColor;
     float specularPower = specularPowerConst;

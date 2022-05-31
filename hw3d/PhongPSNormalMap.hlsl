@@ -1,7 +1,27 @@
 #include "ShaderOps.hlsl"
-#include "LightVectorData.hlsl"
+#include "PointLightVectorData.hlsl"
 
-#include "PointLight.hlsl"
+cbuffer LightData
+{
+	struct PointLight
+	{
+		float3 pos;
+		float3 diffuseColor;
+		float diffuseIntensity;
+		float attConst;
+		float attLin;
+		float attQuad;
+	}point_light;
+
+	struct DirectionalLight
+	{
+		float3 direction;
+		float3 ambient;
+
+		float3 diffuseColor;
+		float diffuseIntensity;
+	}directional_light;
+};
 
 cbuffer ObjectCBuf
 {
@@ -11,7 +31,7 @@ cbuffer ObjectCBuf
     float padding[1];
 };
 
-Texture2D normalMap;
+Texture2D albedoTexture;
 Texture2D nmap : register(t1);
 
 SamplerState splr;
@@ -22,17 +42,25 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float3 vi
 	viewNormal = MapNormal(normalize(viewTan), normalize(viewBitan), viewNormal, tc, nmap, splr);
 
 	// fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
+    const PointLightVectorData lv = CalculateLightVectorData(point_light.pos, viewFragPos);
 	// attenuation
-    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
+    const float att = Attenuate(point_light.attConst, point_light.attLin, point_light.attQuad, lv.distToL);
+
 	// diffuse
-    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, 1, lv.dirToL, viewNormal);
+    float3 diffuse = Diffuse(point_light.diffuseColor, point_light.diffuseIntensity, att, lv.dirToL, viewNormal);
+	diffuse += Diffuse(directional_light.diffuseColor, directional_light.diffuseIntensity, 1, normalize(directional_light.direction), viewNormal);
+
     // specular
-    const float3 specular = Speculate(
-        diffuseColor, diffuseIntensity, viewNormal,
+    float3 specular = Speculate(
+		point_light.diffuseColor, point_light.diffuseIntensity, viewNormal,
         lv.vToL, viewFragPos, att, specularPower
     );
 
+	specular += Speculate(
+		directional_light.diffuseColor, directional_light.diffuseIntensity, viewNormal,
+		normalize(directional_light.direction), viewFragPos, 1, specularPower
+	);
+
 	// final color
-    return float4(saturate((diffuse + ambient) * normalMap.Sample(splr, tc).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + directional_light.ambient) * albedoTexture.Sample(splr, tc).rgb + specular), 1.0f);
 }

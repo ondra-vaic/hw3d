@@ -3,7 +3,7 @@
 #include "ChiliTimer.h"
 #include "ImguiManager.h"
 #include "Camera.h"
-#include "PointLight.h"
+#include "LightData.h"
 #include "TestPlane.h"
 #include "TestCube.h"
 #include "Mesh.h"
@@ -23,7 +23,7 @@ private:
 	void DoFrame();
 	void ShowImguiDemoWindow();
 	void Render(bool ignoreUi);
-	void RenderToTexture(RenderTexture* renderTexture);
+	void RenderToTexture(RenderTexture* renderTexture, float alphaClear);
 private:
 	std::string commandLine;
 	bool showDemoWindow = false;
@@ -33,14 +33,16 @@ private:
 	ChiliTimer timer;
 	float speed_factor = 1.0f;
 	Camera cam;
-	PointLight* light;
+	LightData* light;
+
 	Water* water; //{ wnd.Gfx(),50.0f,{ 0.3f,0.3f,1.0f,0.5f } };
-	TestPlane* ground; // { wnd.Gfx(), 50.0f, { 0.6f,0.6f,0.6f,1 } };
 	TestCube* cube;
 
 	RenderTexture* worldTexture;
 	RenderTexture* reflectedWorldTexture;
 	std::vector<Drawable*> scene;
+
+	void createPool();
 
 	//Model sponza{ wnd.Gfx(),"Models\\sponza\\sponza.obj",1.0f / 20.0f };
 	//TestPlane redPlane{ wnd.Gfx(),6.0f,{ 1.0f,0.3f,0.3f,0.0f } };

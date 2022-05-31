@@ -1,5 +1,5 @@
 #include "ShaderOps.hlsl"
-#include "LightVectorData.hlsl"
+#include "PointLightVectorData.hlsl"
 
 #include "PointLight.hlsl"
 
@@ -16,7 +16,7 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal) : SV_Targ
     // normalize the mesh normal
     viewNormal = normalize(viewNormal);
 	// fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
+    const PointLightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
 	// attenuation
     const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
 	// diffuse

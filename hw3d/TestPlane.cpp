@@ -4,9 +4,9 @@
 #include "imgui/imgui.h"
 #include "TransformCbufDoubleboi.h"
 
-TestPlane::TestPlane( Graphics& gfx,float size,DirectX::XMFLOAT4 color )
+TestPlane::TestPlane( Graphics& gfx,float size)
 	:
-	pmc( { color, 0.3f, 5, 0, 0 } )
+	pmc( { 0.1f, 5, 0, 0 } )
 {
 	using namespace Bind;
 	namespace dx = DirectX;

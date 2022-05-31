@@ -1,5 +1,5 @@
 #include "ShaderOps.hlsl"
-#include "LightVectorData.hlsl"
+#include "PointLightVectorData.hlsl"
 
 #include "PointLight.hlsl"
 
@@ -21,7 +21,7 @@ float4 main(float3 viewFragPos : Position, float3 viewNormal : Normal, float2 tc
     // normalize the mesh normal
     viewNormal = normalize(viewNormal);
 	// fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
+    const PointLightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
     // specular parameters
     float specularPowerLoaded = specularPower;
     const float4 specularSample = spec.Sample(splr, tc);
