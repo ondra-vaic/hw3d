@@ -74,7 +74,7 @@ public:
 
 		return{ std::move( vb ),std::move( indices ) };
 	}
-	static IndexedTriangleList Make()
+	static IndexedTriangleList Make( int tesselation)
 	{
 		using Dvtx::VertexLayout;
 		VertexLayout vl;
@@ -84,6 +84,6 @@ public:
 		vl.Append( VertexLayout::Tangent );
 		vl.Append( VertexLayout::Bitangent );
 
-		return MakeTesselatedTextured( std::move( vl ),100,100 );
+		return MakeTesselatedTextured( std::move( vl ), tesselation, tesselation);
 	}
 };

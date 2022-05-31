@@ -124,7 +124,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	float3 normal = calculateNormal(WorldPosition, Normal, Tangent, BiTangent);
 	float4 waterColor = calculateColor(WorldPosition, normal, cameraToPosition);
 
-	const float refractionDistortionStrength = 0.16f;
+	const float refractionDistortionStrength = 0.06f;
 	const float reflectionDistortionStrength = 0.08f;
 
 	float2 flippedYPosition = float2(Position.x, 1 - Position.y);
@@ -132,12 +132,13 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float2 screenPosition = Position / viewportSize;
 	const float2 flippedYscreenPosition = flippedYPosition / viewportSize;
 
-	half3 vRefrBump = normal * half3(0.075, 0.075, 0.6);
-	half3 vReflBump = normal * half3(0.02, 0.02, 0.6);
+	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06));
+	float3 vReflBump = normalize(normal * half3(0.02, 0.02, 0.06));
 
 	const float4 refractionA = worldTexture.Sample(splr, screenPosition + vRefrBump * refractionDistortionStrength);
 	const float4 refractionB = worldTexture.Sample(splr, screenPosition);
-	const float4 maskedRefraction = lerp(refractionA, refractionB, refractionA.a);
+
+	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
 
 	float4 reflectedColor = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump * reflectionDistortionStrength);
 
@@ -156,11 +157,11 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	float fDistScale = saturate(10/Position.w);
 
-	float4 WaterDeepColor = lerp(maskedRefraction, waterColor, fDistScale);
-	float4 waterCloseColor = lerp(waterColor, WaterDeepColor, facing);
+	float3 WaterDeepColor = lerp(maskedRefraction, waterColor, fDistScale);
+	float3 waterCloseColor = lerp(waterColor, WaterDeepColor, facing);
 	
 	// final water = reflection_color * fresnel + water_color
-	return float4(cReflect + waterCloseColor + waterCloseColor.a, 1);
+	return float4(cReflect + waterCloseColor + waterColor.a, 1);
 
 	//return float4(refractionAndShadedColor + specular, 1);
 }

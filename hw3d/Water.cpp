@@ -15,7 +15,7 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Plane::Make();
+	auto model = Plane::Make(250);
 	model.Transform(dx::XMMatrixScaling(size, size, 1.0f));
 	const auto geometryTag = "$plane." + std::to_string(size);
 	AddBind(VertexBuffer::Resolve(gfx, geometryTag, model.vertices));

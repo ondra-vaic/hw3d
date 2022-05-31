@@ -18,7 +18,7 @@ App::App( const std::string& commandLine )
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
-	water(new Water{wnd.Gfx(), 250.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
+	water(new Water{wnd.Gfx(), 200.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
 	cube(new TestCube(wnd.Gfx(), 25)),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture())

@@ -11,7 +11,7 @@ TestPlane::TestPlane( Graphics& gfx,float size)
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Plane::Make();
+	auto model = Plane::Make(10);
 	model.Transform( dx::XMMatrixScaling( size,size,1.0f ) );
 	const auto geometryTag = "$plane." + std::to_string( size );
 	AddBind( VertexBuffer::Resolve( gfx,geometryTag,model.vertices ) );
