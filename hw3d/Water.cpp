@@ -22,6 +22,7 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainCloseColor, Direct
 	AddBind(IndexBuffer::Resolve(gfx, geometryTag, model.indices));
 
 	AddBind(Texture::Resolve(gfx, "Images\\waterNormal3.png"));
+	AddBind(Texture::Resolve(gfx, "Images\\fig02-07.jpg", 4));
 	AddBind(Sampler::Resolve(gfx));
 
 	auto pvs = VertexShader::Resolve(gfx, "WaterVS.cso");

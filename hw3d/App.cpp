@@ -21,7 +21,7 @@ App::App( const std::string& commandLine )
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
-	water(new Water{wnd.Gfx(), 250.0f, {37 / 255.0f, 163/ 255.0f, 189/ 255.0f}, {0 / 255.0f, 21 / 255.0f, 70 / 255.0f} }),
+	water(new Water{wnd.Gfx(), 250.0f, {190 / 255.0f, 195 / 255.0f, 196 / 255.0f}, {11 / 255.0f, 7/ 255.0f, 25 / 255.0f} }),
 	cube(new TestCube(wnd.Gfx(), 25)),
 	sky(new Sky(wnd.Gfx(), 350, {219/255.0f, 203/255.0f, 201/ 255.0f, 1}, { 73/ 255.0f, 124/ 255.0f, 161 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
@@ -66,6 +66,26 @@ void App::createPool()
 	back->SetPos({ 0, -450 * .5f + 0.5f, 450 * .5f + 80 });
 	back->SetRotation(0, -PI / 2, 0);
 
+	TestCube* down = new TestCube(wnd.Gfx(), 25);
+
+	down->SetPos({ 0, -23, 35 });
+	down->SetRotation(0, -PI / 4, PI / 4);
+
+	TestCube* rightBack = new TestCube(wnd.Gfx(), 45);
+
+	rightBack->SetPos({ 35, -40, 75 });
+	rightBack->SetRotation(PI / 4,  PI/4, PI / 4);
+
+	TestCube* leftTop = new TestCube(wnd.Gfx(), 5.6);
+
+	leftTop->SetPos({ -15.5f, 3, 20 });
+	leftTop->SetRotation(PI / 4, PI / 4, PI / 4);
+
+	TestCube* leftTop1 = new TestCube(wnd.Gfx(), 5.6);
+
+	leftTop1->SetPos({ -24.5f, 4, 14 });
+	leftTop1->SetRotation(PI / 4, 3 * PI / 4, PI / 4);
+
 	TestCube* backTriangle = new TestCube(wnd.Gfx(), 25);
 
 	backTriangle->SetPos({ 0, 0, 80 + 0.03f + 25 *.5f });
@@ -91,6 +111,12 @@ void App::createPool()
 	underwaterCube3->SetPos({ 40 + 25 - 12.5f, -25 - 6.5f, 9 });
 	underwaterCube3->SetRotation(0.18f, -0.25f, 0);
 
+	
+	scene.emplace_back(rightBack);
+	scene.emplace_back(leftTop);
+	scene.emplace_back(leftTop1);
+	
+	scene.emplace_back(down);
 	scene.emplace_back(back);
 	scene.emplace_back(ground);
 	scene.emplace_back(right);
