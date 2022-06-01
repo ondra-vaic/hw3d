@@ -15,7 +15,7 @@ Sky::Sky(Graphics& gfx, float size, DirectX::XMFLOAT4 lowColor, DirectX::XMFLOAT
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Cube::MakeIndependentTextured();
+	auto model = Cube::MakeIndependentTextured(1);
 	model.Transform(dx::XMMatrixScaling(size, size, size));
 	const auto geometryTag = "$plane." + std::to_string(size);
 	AddBind(VertexBuffer::Resolve(gfx, geometryTag, model.vertices));

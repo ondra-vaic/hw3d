@@ -21,7 +21,7 @@ App::App( const std::string& commandLine )
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
-	water(new Water{wnd.Gfx(), 150.0f, {54 / 255.0f, 97/ 255.0f, 106/ 255.0f} }),
+	water(new Water{wnd.Gfx(), 250.0f, {37 / 255.0f, 163/ 255.0f, 189/ 255.0f}, {0 / 255.0f, 21 / 255.0f, 70 / 255.0f} }),
 	cube(new TestCube(wnd.Gfx(), 25)),
 	sky(new Sky(wnd.Gfx(), 350, {219/255.0f, 203/255.0f, 201/ 255.0f, 1}, { 73/ 255.0f, 124/ 255.0f, 161 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
@@ -46,21 +46,27 @@ App::App( const std::string& commandLine )
 
 void App::createPool()
 {
-	TestPlane* ground = new TestPlane{ wnd.Gfx(), 40.0f };
+	TestCube* ground = new TestCube{ wnd.Gfx(), 250.0f };
 
-	ground->SetPos({ 0, -5, 0 });
+	ground->SetPos({ 0, -125, -40 });
 	ground->SetRotation(PI / 2 + 0.35f, 0, 0);
 
-	TestPlane* right = new TestPlane{ wnd.Gfx(), 100.0f };
+	TestCube* right = new TestCube(wnd.Gfx(), 150);
 
-	right->SetPos({ 40, -30, 5 });
+	right->SetPos({ 40 + 75, -75 + 0.5f, 5 });
 	right->SetRotation(0, PI / 2, 0);
 
-	TestPlane* left = new TestPlane{ wnd.Gfx(), 100.0f };
+	TestCube* left = new TestCube(wnd.Gfx(), 150);
 
-	left->SetPos({ -40, -30, 5 });
+	left->SetPos({ -40 - 75, -75 + 0.5f, 5 });
 	left->SetRotation(0, -PI / 2, 0);
 
+	TestCube* back = new TestCube(wnd.Gfx(), 450);
+
+	back->SetPos({ 0, -450 * .5f + 0.5f, 450 * .5f + 80 });
+	back->SetRotation(0, -PI / 2, 0);
+
+	scene.emplace_back(back);
 	scene.emplace_back(ground);
 	scene.emplace_back(right);
 	scene.emplace_back(left);

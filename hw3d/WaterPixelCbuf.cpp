@@ -31,7 +31,8 @@ namespace Bind
 		const int timeSinceStart = getTime() - startTime;
 		return {
 			gfx.GetCameraPosition(),
-			mainColor,
+			mainCloseColor,
+			mainFarColor,
 			static_cast<float>(timeSinceStart),
 			(float)gfx.GetViewportWidth(),
 			(float)gfx.GetViewportHeight(),

@@ -22,7 +22,7 @@ Graphics::Graphics( HWND hWnd,int width,int height)
 {
 	viewportWidth = width;
 	viewportHeight = height;
-	standardProjection = dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 250.0f);
+	standardProjection = dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 500.0f);
 	projection = standardProjection;
 
 	DXGI_SWAP_CHAIN_DESC sd = {};

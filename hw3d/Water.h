@@ -18,10 +18,9 @@ class RenderTexture;
 class Water : public Drawable
 {
 public:
-	Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor);
 
+	Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainCloseColor, DirectX::XMFLOAT3 mainFarColor);
 	void Draw(Graphics& gfx) const noxnd;
-
 	void SetPos(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;

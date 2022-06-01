@@ -116,7 +116,7 @@ public:
 			}
 		};
 	}
-	static IndexedTriangleList MakeIndependentTextured()
+	static IndexedTriangleList MakeIndependentTextured(float textureScale)
 	{
 		using namespace Dvtx;
 		using Type = Dvtx::VertexLayout::ElementType;
@@ -153,6 +153,13 @@ public:
 		itl.vertices[21].Attr<Type::Texture2D>() = { 1.0f,0.0f };
 		itl.vertices[22].Attr<Type::Texture2D>() = { 0.0f,1.0f };
 		itl.vertices[23].Attr<Type::Texture2D>() = { 1.0f,1.0f };
+
+
+		for (int i = 0; i < itl.vertices.Size(); ++i)
+		{
+			auto atributte = itl.vertices[i].Attr<Type::Texture2D>();
+			itl.vertices[i].Attr<Type::Texture2D>() = { atributte.x * textureScale,atributte.y * textureScale };
+		}
 
 		return itl;
 	}

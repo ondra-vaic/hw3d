@@ -8,7 +8,7 @@
 #include "WaterCbuf.h"
 #include "WaterPixelCbuf.h"
 
-Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor)
+Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainCloseColor, DirectX::XMFLOAT3 mainFarColor)
 	:
 	drawMode(WATER)
 {
@@ -33,7 +33,9 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor)
 	depthShader = PixelShader::Resolve(gfx, "WaterDepthPS.cso");
 
 	waterPixelCBuf = std::make_shared<WaterPixelCbuf>(gfx, *this, 1u);
-	waterPixelCBuf->mainColor = mainColor;
+	waterPixelCBuf->mainCloseColor = mainCloseColor;
+	waterPixelCBuf->mainFarColor = mainFarColor;
+
 	AddBind(waterPixelCBuf);
 
 	AddBind(std::make_shared<Stencil>(gfx, Stencil::Mode::Off));
@@ -81,7 +83,8 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("Shading");
 
-		ImGui::ColorEdit3("Water color", &waterPixelCBuf->mainColor.x);
+		ImGui::ColorEdit3("Water close color", &waterPixelCBuf->mainCloseColor.x);
+		ImGui::ColorEdit3("Water far color", &waterPixelCBuf->mainFarColor.x);
 	}
 	ImGui::End();
 }

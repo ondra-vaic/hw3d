@@ -10,15 +10,15 @@ TestCube::TestCube( Graphics& gfx,float size )
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Cube::MakeIndependentTextured();
+	auto model = Cube::MakeIndependentTextured(size / 10.f);
 	model.Transform( dx::XMMatrixScaling( size,size,size ) );
 	model.SetNormalsIndependentFlat();
 	const auto geometryTag = "$cube." + std::to_string( size );
 	AddBind( VertexBuffer::Resolve( gfx,geometryTag,model.vertices ) );
 	AddBind( IndexBuffer::Resolve( gfx,geometryTag,model.indices ) );
 
-	AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal_obj.png"));
-	AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal.jpg", 1));
+	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_albedo.png"));
+	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_normal-ogl.png", 1));
 	AddBind( Sampler::Resolve( gfx ) );
 
 	auto pvs = VertexShader::Resolve( gfx,"PhongVSNormalMap.cso" );
