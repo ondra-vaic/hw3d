@@ -102,7 +102,6 @@ void App::createPool()
 	scene.emplace_back(underwaterCube3);
 }
 
-
 void App::Render(bool ignoreUi)
 {
 	light->Bind(wnd.Gfx(), cam.GetMatrix());

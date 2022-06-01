@@ -136,7 +136,7 @@ float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, floa
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent, float2 UV : Texcoord) : SV_Target
 {
 	const float3 cameraToPosition = normalize(cameraPosition - WorldPosition.xyz);
-	float distanceToWater = 1 - smoothstep(0, 0.2f, length(cameraPosition - WorldPosition.xyz) / 500);
+
 
 	const float refractionDistortionStrength = 0.02f;
 	const float reflectionDistortionStrength = 0.03f;
@@ -146,10 +146,14 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float2 screenPosition = Position / viewportSize;
 	const float2 flippedYscreenPosition = flippedYPosition / viewportSize;
 
-	float depth = depthTexture.Sample(splr, screenPosition);
+	float3 environmentPosition = depthTexture.Sample(splr, screenPosition);
+	float distanceToEnvironment = 1 - smoothstep(0, 0.5f, length(cameraPosition - environmentPosition) / 500);
+	float distanceToWater = 1 - smoothstep(0, 0.2f, length(cameraPosition - WorldPosition.xyz) / 500);
+
+	return distanceToEnvironment; //float4(distanceToEnvironment, 1);
 
 	float3 normal = calculateNormal(WorldPosition, Normal, Tangent, BiTangent);
-	float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, depth - distanceToWater);
+	float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, distanceToEnvironment - distanceToWater);
 
 	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06) * 0.5);
 	float3 vReflBump = normalize(normal * half3(0.02, 0.02, 0.06));

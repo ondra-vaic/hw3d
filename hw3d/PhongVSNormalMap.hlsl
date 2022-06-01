@@ -3,6 +3,7 @@
 struct VSOut
 {
     float4 pos : SV_Position;
+    float4 worldPosition : Color;
     float3 viewPos : Position;
     float3 viewNormal : Normal;
     float3 tan : Tangent;
@@ -14,6 +15,7 @@ VSOut main(float3 pos : Position, float3 n : Normal, float3 tan : Tangent, float
 {
     VSOut vso;
     vso.viewPos = (float3) mul(float4(pos, 1.0f), modelView);
+    vso.worldPosition = mul(float4(pos, 1.0f), model);
     vso.viewNormal = mul(n, (float3x3) modelView);
     vso.tan = mul(tan, (float3x3) modelView);
     vso.bitan = mul(bitan, (float3x3) modelView);    

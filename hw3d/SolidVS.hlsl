@@ -1,6 +1,19 @@
 #include "Transform.hlsl"
 
-float4 main( float3 pos : Position ) : SV_Position
+
+struct VS_OUTPUT
 {
-	return mul( float4(pos,1.0f),modelViewProj );
+	float4 Position : SV_Position;
+	float4 WorldPosition : Color;
+};
+
+VS_OUTPUT main( float3 pos : Position )
+{
+
+	VS_OUTPUT output;
+
+	output.Position = mul(float4(pos, 1.0f), modelViewProj);
+	output.WorldPosition = mul(float4(pos, 1.0f), model);
+
+	return output;
 }

@@ -1,6 +1,4 @@
-float4 main(float4 pos : SV_Position) : SV_Target
+float4 main(float4 pos : SV_Position, float4 worldPos : Color) : SV_Target
 {
-	float depthValue = pos.z / pos.w;
-	float depth = 1 - smoothstep(0, 0.2f, depthValue);
-	return depth;
+	return float4(worldPos.xyz, 1) * 0.08f;
 }
