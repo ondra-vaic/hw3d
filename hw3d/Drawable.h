@@ -30,9 +30,16 @@ public:
 		}
 		return nullptr;
 	}
+
+	void SetRenderDepth(bool renderDepth);
+
 protected:
 	void AddBind( std::shared_ptr<Bind::Bindable> bind ) noxnd;
 
 	const Bind::IndexBuffer* pIndexBuffer = nullptr;
 	std::vector<std::shared_ptr<Bind::Bindable>> binds;
+
+	std::shared_ptr<Bind::Bindable> currentShader;
+	std::shared_ptr<Bind::Bindable> defaultShader;
+	std::shared_ptr<Bind::Bindable> depthShader;
 };

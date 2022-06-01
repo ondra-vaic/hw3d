@@ -41,6 +41,7 @@ cbuffer SkyBox : register(b3)
 Texture2D albedoTexture;
 Texture2D worldTexture : register(t1);
 Texture2D reflectedWorldTexture : register(t2);
+Texture2D depthTexture : register(t3);
 
 SamplerState splr;
 
@@ -97,23 +98,23 @@ float calculateDiffuse(float3 lightDirection, float3 normal, float diffuseIntens
 	return saturate(dot(normal, lightDirection)) * diffuseIntensity;
 }
 
-float4 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPosition)
+float3 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPosition)
 {
 	const float3 pointLightDirection = normalize(point_light.pos - worldPosition);
 	const float3 directionalLightDirection = normalize(directional_light.direction);
 
-	float3 diffuseTotal = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity) * 
-		(mainColor * 0.5f + SampleSkyBox(reflect(-directionalLightDirection, normal), LowColor, HighColor) * 0.5f);
+	float3 diffuseTotal = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity) * mainColor;
+		//(mainColor * 0.5f + SampleSkyBox(reflect(-directionalLightDirection, normal), LowColor, HighColor) * 0.5f);
 
-	diffuseTotal += calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity) * 
-		(mainColor *.5f + SampleSkyBox(reflect(-pointLightDirection, normal), LowColor, HighColor) * 0.5f);
+	diffuseTotal += calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity) * mainColor;
+		//(mainColor *.5f + SampleSkyBox(reflect(-pointLightDirection, normal), LowColor, HighColor) * 0.5f);
 
-	float specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal);
-	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal);
+	float3 specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal) * SampleSkyBox(reflect(-directionalLightDirection, normal), LowColor, HighColor);
+	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal) * SampleSkyBox(reflect(-pointLightDirection, normal), LowColor, HighColor);
 
 	const float3 waterColorShaded = (diffuseTotal + directional_light.ambient);
 
-	return float4(waterColorShaded + specular, specular);
+	return waterColorShaded + specular;
 }
 
 float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, float3 biTangent : Bitangent)
@@ -134,7 +135,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float3 cameraToPosition = normalize(cameraPosition - WorldPosition.xyz);
 
 	float3 normal = calculateNormal(WorldPosition, Normal, Tangent, BiTangent);
-	float4 waterColor = calculateColor(WorldPosition, normal, cameraToPosition);
+	float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition);
 
 	const float refractionDistortionStrength = 0.02f;
 	const float reflectionDistortionStrength = 0.03f;
@@ -143,6 +144,8 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	const float2 screenPosition = Position / viewportSize;
 	const float2 flippedYscreenPosition = flippedYPosition / viewportSize;
+
+	return depthTexture.Sample(splr, screenPosition);
 
 	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06) * 0.5);
 	float3 vReflBump = normalize(normal * half3(0.02, 0.02, 0.06));
@@ -155,7 +158,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	float4 reflectedColorA = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump * reflectionDistortionStrength);
 	float4 reflectedColorB = reflectedWorldTexture.Sample(splr, flippedYscreenPosition);
 	float4 maskedReflection = lerp(reflectedColorA, reflectedColorB, smoothstep(0, 0.01, 1 - reflectedColorA.a));
-
+	
 	float NdotL = max(dot(cameraToPosition, vReflBump), 0);
 	float facing = (1.0 - NdotL);
 	float fresnel = Fresnel(NdotL, 0.1, 0.8);

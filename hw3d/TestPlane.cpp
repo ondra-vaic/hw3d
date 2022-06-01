@@ -24,7 +24,9 @@ TestPlane::TestPlane( Graphics& gfx,float size)
 	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_albedo.png"));
 	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_normal-ogl.png", 1));
 
-	AddBind( PixelShader::Resolve( gfx,"PhongPSNormalMap.cso" ) );
+	defaultShader = PixelShader::Resolve(gfx, "PhongPSNormalMap.cso");
+	depthShader = PixelShader::Resolve(gfx, "DefaultDepthPS.cso");
+	currentShader = defaultShader;
 
 	AddBind( std::make_shared<PixelConstantBuffer<PSMaterialConstant>>( gfx,pmc,1u ) );
 

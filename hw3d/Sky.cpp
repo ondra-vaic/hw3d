@@ -25,7 +25,9 @@ Sky::Sky(Graphics& gfx, float size, DirectX::XMFLOAT4 lowColor, DirectX::XMFLOAT
 	auto pvsbc = pvs->GetBytecode();
 	AddBind(std::move(pvs));
 
-	AddBind(PixelShader::Resolve(gfx, "skyPS.cso"));
+	defaultShader = PixelShader::Resolve(gfx, "skyPS.cso");
+	depthShader = PixelShader::Resolve(gfx, "DefaultDepthPS.cso");
+	currentShader = defaultShader;
 
 	AddBind(PixelConstantBuffer<SkyPSMaterialConstant>::Resolve(gfx, pmc, 3u));
 

@@ -499,5 +499,11 @@
     <FxCompile Include="SkyVs.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="WaterDepthPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="DefaultDepthPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

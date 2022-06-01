@@ -43,6 +43,7 @@ private:
 
 	RenderTexture* worldTexture;
 	RenderTexture* reflectedWorldTexture;
+	RenderTexture* depthTexture;
 	std::vector<Drawable*> scene;
 
 	void createPool();

@@ -11,7 +11,21 @@ void Drawable::Draw( Graphics& gfx ) const noxnd
 	{
 		b->Bind( gfx );
 	}
+	currentShader->Bind(gfx);
+
 	gfx.DrawIndexed( pIndexBuffer->GetCount() );
+}
+
+void Drawable::SetRenderDepth(bool renderDepth)
+{
+	if(renderDepth)
+	{
+		currentShader = depthShader;
+	}
+	else
+	{
+		currentShader = defaultShader;
+	}
 }
 
 void Drawable::AddBind( std::shared_ptr<Bindable> bind ) noxnd

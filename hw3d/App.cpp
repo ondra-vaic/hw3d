@@ -25,18 +25,20 @@ App::App( const std::string& commandLine )
 	cube(new TestCube(wnd.Gfx(), 25)),
 	sky(new Sky(wnd.Gfx(), 350, {219/255.0f, 203/255.0f, 201/ 255.0f, 1}, { 73/ 255.0f, 124/ 255.0f, 161 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
-	reflectedWorldTexture(new RenderTexture())
+	reflectedWorldTexture(new RenderTexture()),
+	depthTexture(new RenderTexture())
 {
 	TestDynamicConstant();
 	cube->SetPos({ 0, 15, 45});
 
 	createPool();
-	scene.emplace_back(cube);
+	//scene.emplace_back(cube);
 	scene.emplace_back(sky);
 	scene.emplace_back(water);
 
 	worldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 	reflectedWorldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
+	depthTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 
 	water->SetPos( {0, 0, 0} );
 	water->SetRotation(PI / 2, PI, 0);
@@ -111,8 +113,24 @@ void App::DoFrame()
 {
 	const auto dt = timer.Mark() * speed_factor;
 
-	water->SetDrawMask(true);
+	water->SetDrawMode(DEPTH);
+	wnd.Gfx().SetCamera(cam);
+	for (auto element : scene)
+	{
+		if(element == water) continue;
 
+		element->SetRenderDepth(true);
+	}
+	RenderToTexture(depthTexture, 0);
+
+	for (auto element : scene)
+	{
+		element->SetRenderDepth(false);
+	}
+
+	water->SetDepthTexture(depthTexture->GetShaderResourceView());
+
+	water->SetDrawMode(MASK);
 	cam.SetReflectionPlaneY(water->GetY());
 	cam.SetIsReflected(true);
 	wnd.Gfx().SetCamera(cam);
@@ -128,7 +146,7 @@ void App::DoFrame()
 	RenderToTexture(worldTexture, 1);
 	water->SetWorldTexture(worldTexture->GetShaderResourceView());
 
-	water->SetDrawMask(false);
+	water->SetDrawMode(WATER);
 
 	wnd.Gfx().BeginFrame(0.0f, 0.0f, 0.0f);
 	Render(false);

@@ -25,7 +25,9 @@ TestCube::TestCube( Graphics& gfx,float size )
 	auto pvsbc = pvs->GetBytecode();
 	AddBind( std::move( pvs ) );
 
-	AddBind( PixelShader::Resolve( gfx,"PhongPSNormalMap.cso" ) );
+	defaultShader = PixelShader::Resolve(gfx, "PhongPSNormalMap.cso");
+	depthShader = PixelShader::Resolve(gfx, "DefaultDepthPS.cso");
+	currentShader = defaultShader;
 
 	AddBind( PixelConstantBuffer<PSMaterialConstant>::Resolve( gfx,pmc,1u ) );
 

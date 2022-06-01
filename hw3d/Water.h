@@ -7,6 +7,12 @@ namespace Bind
 	class Blender;
 }
 
+enum DrawMode
+{
+	WATER,
+	MASK,
+	DEPTH
+};
 class RenderTexture;
 
 class Water : public Drawable
@@ -22,7 +28,8 @@ public:
 	void SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept;
 	void SetWorldTexture(ID3D11ShaderResourceView* worldTextureResource);
 	void SetReflectedWorldTexture(ID3D11ShaderResourceView* reflectedWorldTextureResource);
-	void SetDrawMask(bool drawMask);
+	void SetDepthTexture(ID3D11ShaderResourceView* depthTextureResource);
+	void SetDrawMode(DrawMode drawMode);
 	float GetY() const;
 
 private:
@@ -31,13 +38,13 @@ private:
 	float roll = 0.0f;
 	float pitch = 0.0f;
 	float yaw = 0.0f;
-	bool drawMask;
+	DrawMode drawMode;
 
 	ID3D11ShaderResourceView* worldTextureResource;
 	ID3D11ShaderResourceView* reflectedWorldTextureResource;
+	ID3D11ShaderResourceView* depthTextureResource;
 
 	std::shared_ptr<Bind::WaterPixelCbuf> waterPixelCBuf;
-	std::shared_ptr<Bind::Bindable> waterShader;
 	std::shared_ptr<Bind::Bindable> maskShader;
 	std::shared_ptr<Bind::Blender> blender;
 };

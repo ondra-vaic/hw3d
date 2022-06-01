@@ -10,7 +10,7 @@
 
 Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor)
 	:
-	drawMask(false)
+	drawMode(WATER)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
@@ -28,8 +28,9 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor)
 	auto pvsbc = pvs->GetBytecode();
 	AddBind(std::move(pvs));
 
-	waterShader =  PixelShader::Resolve(gfx, "WaterPS.cso");
+	defaultShader =  PixelShader::Resolve(gfx, "WaterPS.cso");
 	maskShader = PixelShader::Resolve(gfx, "WaterMaskPS.cso");
+	depthShader = PixelShader::Resolve(gfx, "WaterDepthPS.cso");
 
 	waterPixelCBuf = std::make_shared<WaterPixelCbuf>(gfx, *this, 1u);
 	waterPixelCBuf->mainColor = mainColor;
@@ -95,18 +96,14 @@ void Water::SetReflectedWorldTexture(ID3D11ShaderResourceView* reflectedWorldTex
 	this->reflectedWorldTextureResource = reflectedWorldTextureResource;
 }
 
+void Water::SetDepthTexture(ID3D11ShaderResourceView* depthTextureResource)
+{
+	this->depthTextureResource = depthTextureResource;
+}
+
 void Water::Draw(Graphics& gfx) const noexcept(!true)
 {
-	if (drawMask)
-	{
-		blender->Bind(gfx);
-		maskShader->Bind(gfx);
-	}
-	else
-	{
-		blender->Bind(gfx);
-		waterShader->Bind(gfx);
-	}
+	blender->Bind(gfx);
 
 	if(worldTextureResource)
 	{
@@ -118,13 +115,34 @@ void Water::Draw(Graphics& gfx) const noexcept(!true)
 		gfx.GetDeviceContext()->PSSetShaderResources(2, 1u, &reflectedWorldTextureResource);
 	}
 
+	if (depthTextureResource)
+	{
+
+		gfx.GetDeviceContext()->PSSetShaderResources(3, 1u, &depthTextureResource);
+	}
+
 	Drawable::Draw(gfx);
 }
 
-void Water::SetDrawMask(bool drawMask)
+void Water::SetDrawMode(DrawMode drawMode)
 {
-	blender->SetFactor(!drawMask);
-	this->drawMask = drawMask;
+	blender->SetFactor(!(drawMode != WATER));
+	this->drawMode = drawMode;
+
+	switch (drawMode)
+	{
+	case MASK:
+		currentShader = maskShader;
+		break;
+
+	case DEPTH:
+		currentShader = depthShader;
+		break;
+
+	case WATER:
+		currentShader = defaultShader;
+		break;
+	}
 }
 
 float Water::GetY() const

@@ -21,7 +21,9 @@ SolidSphere::SolidSphere( Graphics& gfx,float radius )
 	auto pvsbc = pvs->GetBytecode();
 	AddBind( std::move( pvs ) );
 
-	AddBind( PixelShader::Resolve( gfx,"SolidPS.cso" ) );
+	defaultShader = PixelShader::Resolve(gfx, "SolidPS.cso");
+	depthShader = PixelShader::Resolve(gfx, "DefaultDepthPS.cso");
+	currentShader = defaultShader;
 
 	struct PSColorConstant
 	{
