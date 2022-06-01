@@ -40,7 +40,7 @@ App::App( const std::string& commandLine )
 	reflectedWorldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 	depthTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
 
-	water->SetPos( {0, 0, 0} );
+	water->SetPos( {0, -2.7f, 0} );
 	water->SetRotation(PI / 2, PI, 0);
 }
 
@@ -66,10 +66,40 @@ void App::createPool()
 	back->SetPos({ 0, -450 * .5f + 0.5f, 450 * .5f + 80 });
 	back->SetRotation(0, -PI / 2, 0);
 
+	TestCube* backTriangle = new TestCube(wnd.Gfx(), 25);
+
+	backTriangle->SetPos({ 0, 0, 80 + 0.03f + 25 *.5f });
+	backTriangle->SetRotation(PI / 4, PI/2, 0);
+
+	TestCube* underwaterCube = new TestCube(wnd.Gfx(), 10);
+
+	underwaterCube->SetPos({ 0, -4, 10});
+	underwaterCube->SetRotation(0, 0, 0);
+
+	TestCube* underwaterCube1 = new TestCube(wnd.Gfx(), 50);
+
+	underwaterCube1->SetPos({ 40 + 25 - 10, -25 - 4.5f, 16 });
+	underwaterCube1->SetRotation(0, 0, 0);
+
+	TestCube* underwaterCube2 = new TestCube(wnd.Gfx(), 50);
+
+	underwaterCube2->SetPos({ 40 + 25 - 12, -25 - 5.5f, 12 });
+	underwaterCube2->SetRotation(0.06f, -0.15f, 0);
+
+	TestCube* underwaterCube3 = new TestCube(wnd.Gfx(), 50);
+
+	underwaterCube3->SetPos({ 40 + 25 - 12.5f, -25 - 6.5f, 9 });
+	underwaterCube3->SetRotation(0.18f, -0.25f, 0);
+
 	scene.emplace_back(back);
 	scene.emplace_back(ground);
 	scene.emplace_back(right);
 	scene.emplace_back(left);
+	scene.emplace_back(backTriangle);
+	scene.emplace_back(underwaterCube);
+	scene.emplace_back(underwaterCube1);
+	scene.emplace_back(underwaterCube2);
+	scene.emplace_back(underwaterCube3);
 }
 
 
@@ -140,7 +170,7 @@ void App::DoFrame()
 	cam.SetReflectionPlaneY(water->GetY());
 	cam.SetIsReflected(true);
 	wnd.Gfx().SetCamera(cam);
-	wnd.Gfx().SetObliqueClippingPlane(water->GetY());
+	wnd.Gfx().SetObliqueClippingPlane(water->GetY() - 2.7f);
 
 	RenderToTexture(reflectedWorldTexture, 0);
 	water->SetReflectedWorldTexture(reflectedWorldTexture->GetShaderResourceView());

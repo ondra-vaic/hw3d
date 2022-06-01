@@ -136,6 +136,7 @@ float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, floa
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent, float2 UV : Texcoord) : SV_Target
 {
 	const float3 cameraToPosition = normalize(cameraPosition - WorldPosition.xyz);
+	float distanceToWater = 1 - smoothstep(0, 0.2f, length(cameraPosition - WorldPosition.xyz) / 500);
 
 	const float refractionDistortionStrength = 0.02f;
 	const float reflectionDistortionStrength = 0.03f;
@@ -148,7 +149,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	float depth = depthTexture.Sample(splr, screenPosition);
 
 	float3 normal = calculateNormal(WorldPosition, Normal, Tangent, BiTangent);
-	float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, depth);
+	float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, depth - distanceToWater);
 
 	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06) * 0.5);
 	float3 vReflBump = normalize(normal * half3(0.02, 0.02, 0.06));
@@ -159,15 +160,13 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
 
 	float4 reflectedColorA = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump * reflectionDistortionStrength);
-	float4 reflectedColorB = reflectedWorldTexture.Sample(splr, flippedYscreenPosition);
-	float4 maskedReflection = lerp(reflectedColorA, reflectedColorB, smoothstep(0, 0.01, 1 - reflectedColorA.a));
-	
+
 	float NdotL = max(dot(cameraToPosition, vReflBump), 0);
 	float facing = (1.0 - NdotL);
 	float fresnel = Fresnel(NdotL, 0.1, 0.8);
-	float3 cReflect = fresnel * maskedReflection;
+	float3 cReflect = fresnel * reflectedColorA;
 
-	float fDistScale = saturate(10.5f/Position.w);
+	float fDistScale = saturate(16.0f/Position.w);
 	
 	float3 WaterDeepColor = lerp(waterColor, maskedRefraction, fDistScale);
 	float3 waterCloseColor = lerp(WaterDeepColor, waterColor, facing);
