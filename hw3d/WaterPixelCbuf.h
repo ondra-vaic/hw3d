@@ -6,15 +6,18 @@ namespace Bind
 {
 	class WaterPixelCbuf : public Bindable
 	{
+	public:
+		DirectX::XMFLOAT3 mainColor;
+
 	protected:
 		struct WaterPixelParams
 		{
-			DirectX::XMFLOAT3 cameraPosition;
+			alignas(16)DirectX::XMFLOAT3 cameraPosition;
+			alignas(16)DirectX::XMFLOAT3 mainColor;
 			float time;
 			float width;
 			float height;
 			float padding;
-			float padding2;
 		};
 	public:
 		WaterPixelCbuf(Graphics& gfx, const Drawable& parent, UINT slot = 0u);

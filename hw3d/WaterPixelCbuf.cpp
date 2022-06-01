@@ -31,11 +31,10 @@ namespace Bind
 		const int timeSinceStart = getTime() - startTime;
 		return {
 			gfx.GetCameraPosition(),
+			mainColor,
 			static_cast<float>(timeSinceStart),
 			(float)gfx.GetViewportWidth(),
 			(float)gfx.GetViewportHeight(),
-			0,
-			0
 		};
 	}
 

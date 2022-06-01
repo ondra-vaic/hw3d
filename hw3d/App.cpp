@@ -1,6 +1,8 @@
 #include "App.h"
 #include <memory>
 #include <algorithm>
+#include <sstream>
+
 #include "ChiliMath.h"
 #include "Surface.h"
 #include "imgui/imgui.h"
@@ -8,6 +10,7 @@
 #include "ChiliUtil.h"
 #include "Cube.h"
 #include "RenderTexture.h"
+#include "Sky.h"
 #include "Testing.h"
 
 namespace dx = DirectX;
@@ -18,8 +21,9 @@ App::App( const std::string& commandLine )
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
-	water(new Water{wnd.Gfx(), 200.0f, {0.3f, 0.3f, 1.0f, 0.5f}}),
+	water(new Water{wnd.Gfx(), 150.0f, {140 / 255.0f, 132/ 255.0f, 124 / 255.0f} }),
 	cube(new TestCube(wnd.Gfx(), 25)),
+	sky(new Sky(wnd.Gfx(), 350, {219/255.0f, 203/255.0f, 201/ 255.0f, 1}, { 73/ 255.0f, 124/ 255.0f, 161 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture())
 {
@@ -28,6 +32,7 @@ App::App( const std::string& commandLine )
 
 	createPool();
 	scene.emplace_back(cube);
+	scene.emplace_back(sky);
 	scene.emplace_back(water);
 
 	worldTexture->Initialize(wnd.Gfx().GetDevice(), wnd.Gfx().GetViewportWidth(), wnd.Gfx().GetViewportHeight());
@@ -35,17 +40,28 @@ App::App( const std::string& commandLine )
 
 	water->SetPos( {0, 0, 0} );
 	water->SetRotation(PI / 2, PI, 0);
-	//wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,400.0f ) );
 }
 
 void App::createPool()
 {
-	TestPlane* ground = new TestPlane{ wnd.Gfx(), 38.0f };
+	TestPlane* ground = new TestPlane{ wnd.Gfx(), 40.0f };
 
-	ground->SetPos({ 0, 0, 0 });
-	ground->SetRotation(PI / 2 + 0.15f, 0, 0);
+	ground->SetPos({ 0, -5, 0 });
+	ground->SetRotation(PI / 2 + 0.35f, 0, 0);
+
+	TestPlane* right = new TestPlane{ wnd.Gfx(), 100.0f };
+
+	right->SetPos({ 40, -30, 5 });
+	right->SetRotation(0, PI / 2, 0);
+
+	TestPlane* left = new TestPlane{ wnd.Gfx(), 100.0f };
+
+	left->SetPos({ -40, -30, 5 });
+	left->SetRotation(0, -PI / 2, 0);
 
 	scene.emplace_back(ground);
+	scene.emplace_back(right);
+	scene.emplace_back(left);
 }
 
 
@@ -67,6 +83,19 @@ void App::Render(bool ignoreUi)
 		ShowImguiDemoWindow();
 		water->SpawnControlWindow(wnd.Gfx(), "Water");
 		cube->SpawnControlWindow(wnd.Gfx(), "Cube");
+		sky->SpawnControlWindow(wnd.Gfx(), "Sky");
+		/*
+		for (auto element : scene)
+		{
+			TestPlane* plane = static_cast<TestPlane*>(element);
+			if(plane != nullptr)
+			{
+				std::stringstream name;
+				name << "element + " << (int)&element;
+				static_cast<TestPlane*>(element)->SpawnControlWindow(wnd.Gfx(), name.str());
+			}
+		}
+		*/
 	}
 }
 
@@ -101,7 +130,7 @@ void App::DoFrame()
 
 	water->SetDrawMask(false);
 
-	wnd.Gfx().BeginFrame(0.23f, 0.67f, 0.98f);
+	wnd.Gfx().BeginFrame(0.0f, 0.0f, 0.0f);
 	Render(false);
 	wnd.Gfx().EndFrame();
 

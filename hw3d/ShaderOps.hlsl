@@ -15,6 +15,16 @@ float3 MapNormal(
     return normalize(mul(tanNormal, tanToTarget));
 }
 
+float4 SampleSkyBox(float3 viewDir, float3 lowColor, float3 highColor)
+{
+    float viewDot = dot(normalize(viewDir + float3(0, 0.2f, 0)), float3(0, 1, 0));
+
+    float3 colorDown = lerp(float3(0, 0, 0), lowColor, smoothstep(-1.0f, 0.0f, viewDot));
+    float3 colorUp = lerp(lowColor, highColor, smoothstep(0, 0.5f, viewDot));
+
+    return float4(lerp(colorDown, colorUp, smoothstep(-1.0f, 0.25f, viewDot)), 1);
+}
+
 float Attenuate(uniform float attConst, uniform float attLin, uniform float attQuad, const in float distFragToL)
 {
     return 1.0f / (attConst + attLin * distFragToL + attQuad * (distFragToL * distFragToL));

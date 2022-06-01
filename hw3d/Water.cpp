@@ -8,14 +8,14 @@
 #include "WaterCbuf.h"
 #include "WaterPixelCbuf.h"
 
-Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
+Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor)
 	:
-	pmc({ color }), drawMask(false)
+	drawMask(false)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Plane::Make(250);
+	auto model = Plane::Make(250, size);
 	model.Transform(dx::XMMatrixScaling(size, size, 1.0f));
 	const auto geometryTag = "$plane." + std::to_string(size);
 	AddBind(VertexBuffer::Resolve(gfx, geometryTag, model.vertices));
@@ -31,7 +31,9 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color)
 	waterShader =  PixelShader::Resolve(gfx, "WaterPS.cso");
 	maskShader = PixelShader::Resolve(gfx, "WaterMaskPS.cso");
 
-	AddBind(std::make_shared<WaterPixelCbuf>(gfx, *this, 1u));
+	waterPixelCBuf = std::make_shared<WaterPixelCbuf>(gfx, *this, 1u);
+	waterPixelCBuf->mainColor = mainColor;
+	AddBind(waterPixelCBuf);
 
 	AddBind(std::make_shared<Stencil>(gfx, Stencil::Mode::Off));
 
@@ -78,13 +80,7 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("Shading");
 
-		/*
-		 *
-		float factor = blender->GetFactor();
-		ImGui::SliderFloat("Translucency", &factor, 0.0f, 1.0f);
-		blender->SetFactor(factor);
-		
-		 */
+		ImGui::ColorEdit3("Water color", &waterPixelCBuf->mainColor.x);
 	}
 	ImGui::End();
 }

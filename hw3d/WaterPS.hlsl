@@ -1,3 +1,5 @@
+#include "ShaderOps.hlsl"
+
 cbuffer LightData
 {
 	struct PointLight
@@ -23,8 +25,17 @@ cbuffer LightData
 cbuffer CBuf : register(b1)
 {
 	float3 cameraPosition;
+	float3 mainColor;
 	float time;
 	float2 viewportSize;
+};
+
+cbuffer SkyBox : register(b3)
+{
+	float3 LowColor;
+	float3 HighColor;
+
+	float3 CameraPosition;
 };
 
 Texture2D albedoTexture;
@@ -81,27 +92,28 @@ float calculateSpecular(float3 viewVector, float3 lightDirection, float3 normal)
 	return 0.5f * pow(saturate(dot(R, -viewVector)), 80.5f);
 }
 
-float calculateDiffuse(float3 lightDirection, float3 normal, float3 diffuseColor, float diffuseIntensity)
+float calculateDiffuse(float3 lightDirection, float3 normal, float diffuseIntensity)
 {
-	return saturate(dot(normal, lightDirection)) * diffuseColor * diffuseIntensity;
+	return saturate(dot(normal, lightDirection)) * diffuseIntensity;
 }
 
 float4 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPosition)
 {
-	const float3 waterColor1 = float3(0.05, 0.36, 0.61);
-	
 	const float3 pointLightDirection = normalize(point_light.pos - worldPosition);
 	const float3 directionalLightDirection = normalize(directional_light.direction);
 
-	float3 diffuseTotal = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseColor, directional_light.diffuseIntensity);
-	diffuseTotal += saturate(dot(normal, pointLightDirection)) * point_light.diffuseColor * point_light.diffuseIntensity;
+	float3 diffuseTotal = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity) * 
+		(mainColor * 0.5f + SampleSkyBox(reflect(-directionalLightDirection, normal), LowColor, HighColor) * 0.5f);
+
+	diffuseTotal += calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity) * 
+		(mainColor *.5f + SampleSkyBox(reflect(-pointLightDirection, normal), LowColor, HighColor) * 0.5f);
 
 	float specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal);
 	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal);
 
-	const float3 waterColorShaded = (diffuseTotal + directional_light.ambient) * waterColor1;
+	const float3 waterColorShaded = (diffuseTotal + directional_light.ambient);
 
-	return float4(waterColorShaded, specular);
+	return float4(waterColorShaded + specular, specular);
 }
 
 float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, float3 biTangent : Bitangent)
@@ -124,15 +136,15 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	float3 normal = calculateNormal(WorldPosition, Normal, Tangent, BiTangent);
 	float4 waterColor = calculateColor(WorldPosition, normal, cameraToPosition);
 
-	const float refractionDistortionStrength = 0.06f;
-	const float reflectionDistortionStrength = 0.08f;
+	const float refractionDistortionStrength = 0.02f;
+	const float reflectionDistortionStrength = 0.03f;
 
 	float2 flippedYPosition = float2(Position.x, 1 - Position.y);
 
 	const float2 screenPosition = Position / viewportSize;
 	const float2 flippedYscreenPosition = flippedYPosition / viewportSize;
 
-	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06));
+	float3 vRefrBump = normalize(normal * half3(0.075, 0.075, 0.06) * 0.5);
 	float3 vReflBump = normalize(normal * half3(0.02, 0.02, 0.06));
 
 	const float4 refractionA = worldTexture.Sample(splr, screenPosition + vRefrBump * refractionDistortionStrength);
@@ -140,28 +152,19 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
 
-	float4 reflectedColor = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump * reflectionDistortionStrength);
-
-	float3 skyboxLowColor = float3(0.23f, 0.67f, 0.98f);
-	float3 skyboxHighColor = float3(0.1f, 0.2f, 0.2f);
-
-	reflectedColor += float4(lerp(skyboxLowColor, skyboxHighColor, dot(normal, float3(0, 1, 0))), 1);
-
-	// return lepr(0.5, 1, dot(normal, float3(0, 1, 0)));
-	//float3 skyboxLowColor = smoothstep(0, 1, dot(normal, float3(0, 1, 0)));
+	float4 reflectedColorA = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump * reflectionDistortionStrength);
+	float4 reflectedColorB = reflectedWorldTexture.Sample(splr, flippedYscreenPosition);
+	float4 maskedReflection = lerp(reflectedColorA, reflectedColorB, smoothstep(0, 0.01, 1 - reflectedColorA.a));
 
 	float NdotL = max(dot(cameraToPosition, vReflBump), 0);
 	float facing = (1.0 - NdotL);
-	float fresnel = Fresnel(NdotL, 0.1, 5.0);
-	float3 cReflect = fresnel * reflectedColor;
+	float fresnel = Fresnel(NdotL, 0.1, 0.8);
+	float3 cReflect = fresnel * maskedReflection;
 
-	float fDistScale = saturate(10/Position.w);
-
-	float3 WaterDeepColor = lerp(maskedRefraction, waterColor, fDistScale);
-	float3 waterCloseColor = lerp(waterColor, WaterDeepColor, facing);
+	float fDistScale = saturate(19.5f/Position.w);
 	
-	// final water = reflection_color * fresnel + water_color
-	return float4(cReflect + waterCloseColor + waterColor.a, 1);
+	float3 WaterDeepColor = lerp(waterColor, maskedRefraction, fDistScale);
+	float3 waterCloseColor = lerp(WaterDeepColor, waterColor, facing);
 
-	//return float4(refractionAndShadedColor + specular, 1);
+	return float4(cReflect + waterCloseColor, 1);
 }

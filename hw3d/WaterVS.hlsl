@@ -130,8 +130,9 @@ VS_OUTPUT main(float3 pos : Position, float2 tc : Texcoord)
 
 	float4 modelPosition = mul(float4(pos, 1.0f), model);
 
-	float3 newPosition = calculateWavePosition(modelPosition.xyz);
-	
+	float3 newPosition = calculateWavePosition(modelPosition.xyz) + float3(0, -2.7f, 0);
+	//newPosition
+
 	output.Position = mul(mul(float4(newPosition, 1.0f), view), projection);
 	output.WorldPosition = float4(newPosition, 1.0f);
 	output.Normal = calculateWaveNormal(modelPosition.xyz);

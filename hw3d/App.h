@@ -12,6 +12,8 @@
 #include "Stencil.h"
 #include "Water.h"
 
+class Sky;
+
 class App
 {
 public:
@@ -37,6 +39,7 @@ private:
 
 	Water* water; //{ wnd.Gfx(),50.0f,{ 0.3f,0.3f,1.0f,0.5f } };
 	TestCube* cube;
+	Sky* sky;
 
 	RenderTexture* worldTexture;
 	RenderTexture* reflectedWorldTexture;

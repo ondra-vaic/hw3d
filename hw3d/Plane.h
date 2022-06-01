@@ -10,7 +10,7 @@
 class Plane
 {
 public:
-	static IndexedTriangleList MakeTesselatedTextured( Dvtx::VertexLayout layout,int divisions_x,int divisions_y )
+	static IndexedTriangleList MakeTesselatedTextured( Dvtx::VertexLayout layout,int divisions_x,int divisions_y, float textureScale )
 	{
 		namespace dx = DirectX;
 		assert( divisions_x >= 1 );
@@ -33,11 +33,11 @@ public:
 			for( int y = 0,i = 0; y < nVertices_y; y++ )
 			{
 				const float y_pos = float( y ) * divisionSize_y - side_y;
-				const float y_pos_tc = 1.0f - float( y ) * divisionSize_y_tc;
+				const float y_pos_tc = 1.0f - float( y ) * divisionSize_y_tc * textureScale;
 				for( int x = 0; x < nVertices_x; x++,i++ )
 				{
 					const float x_pos = float( x ) * divisionSize_x - side_x;
-					const float x_pos_tc = float( x ) * divisionSize_x_tc;
+					const float x_pos_tc = float( x ) * divisionSize_x_tc * textureScale;
 					vb.EmplaceBack(
 						dx::XMFLOAT3{ x_pos,y_pos,0.0f },
 						dx::XMFLOAT3{ 0.0f,0.0f,-1.0f },
@@ -74,7 +74,7 @@ public:
 
 		return{ std::move( vb ),std::move( indices ) };
 	}
-	static IndexedTriangleList Make( int tesselation)
+	static IndexedTriangleList Make( int tesselation, float textureScale)
 	{
 		using Dvtx::VertexLayout;
 		VertexLayout vl;
@@ -84,6 +84,6 @@ public:
 		vl.Append( VertexLayout::Tangent );
 		vl.Append( VertexLayout::Bitangent );
 
-		return MakeTesselatedTextured( std::move( vl ), tesselation, tesselation);
+		return MakeTesselatedTextured( std::move( vl ), tesselation, tesselation, textureScale);
 	}
 };

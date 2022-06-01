@@ -11,7 +11,7 @@ TestPlane::TestPlane( Graphics& gfx,float size)
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Plane::Make(10);
+	auto model = Plane::Make(10, size / 10.0f);
 	model.Transform( dx::XMMatrixScaling( size,size,1.0f ) );
 	const auto geometryTag = "$plane." + std::to_string( size );
 	AddBind( VertexBuffer::Resolve( gfx,geometryTag,model.vertices ) );
@@ -21,8 +21,8 @@ TestPlane::TestPlane( Graphics& gfx,float size)
 	auto pvsbc = pvs->GetBytecode();
 	AddBind( std::move( pvs ) );
 
-	AddBind(Texture::Resolve(gfx, "Images\\brickwall.jpg"));
-	AddBind(Texture::Resolve(gfx, "Images\\brickwall_normal.jpg", 1));
+	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_albedo.png"));
+	AddBind(Texture::Resolve(gfx, "Images\\angled-tiled-floor_normal-ogl.png", 1));
 
 	AddBind( PixelShader::Resolve( gfx,"PhongPSNormalMap.cso" ) );
 

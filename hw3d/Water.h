@@ -3,6 +3,7 @@
 
 namespace Bind
 {
+	class WaterPixelCbuf;
 	class Blender;
 }
 
@@ -11,7 +12,7 @@ class RenderTexture;
 class Water : public Drawable
 {
 public:
-	Water(Graphics& gfx, float size, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,0.0f });
+	Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainColor);
 
 	void Draw(Graphics& gfx) const noxnd;
 
@@ -26,14 +27,6 @@ public:
 
 private:
 
-	struct PSMaterialConstant
-	{
-		DirectX::XMFLOAT4 color;
-	} pmc;
-	struct VSMaterialConstant
-	{
-		DirectX::XMFLOAT4 color;
-	} vmc;
 	DirectX::XMFLOAT3 pos = { 0.0f,0.0f,0.0f };
 	float roll = 0.0f;
 	float pitch = 0.0f;
@@ -43,6 +36,7 @@ private:
 	ID3D11ShaderResourceView* worldTextureResource;
 	ID3D11ShaderResourceView* reflectedWorldTextureResource;
 
+	std::shared_ptr<Bind::WaterPixelCbuf> waterPixelCBuf;
 	std::shared_ptr<Bind::Bindable> waterShader;
 	std::shared_ptr<Bind::Bindable> maskShader;
 	std::shared_ptr<Bind::Blender> blender;
