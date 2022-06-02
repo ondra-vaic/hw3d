@@ -52,14 +52,14 @@ private:
 		float time = 0;
 		float planeY = 0;
 		float specular = 0.5f;
-		float specularPower = 4.1f;
+		float specularPower = 36.1f;
 		float skyBoxWeight = 0.7f;
 		float refractionDistortionStrength = 0.1f;
 		float reflectionDistortionStrength = 0.2f;
 		float fresnelBias = 0.1f;
-		float fresnelPower = 0.8f;
+		float fresnelPower = 8.3f;
 		float fresnelDistantScale = 18.3f;
-		float causticsPower = 0.7f;
+		float causticsPower = 1.7f;
 		float causticsLength = 2.0f;
 		float causticsDepthFallOff = 0.25f;
 		float depthFar = 444.0f;
@@ -69,13 +69,13 @@ private:
 		float pad[1];
 	} pmc;
 
-	float specular = 33.0f;
+	float specular = 46.0f;
 	float skyBoxWeight = 27.0f;
 	float refractionDistortionStrength = 23.4f;
 	float reflectionDistortionStrength = 20.4f;
 	float causticsDepthFallOff = 3405.0f;
 
-	float fresnelBias = 10.9f;
+	float fresnelBias = 25.9f;
 	float depthCutOff = 20.5f;
 	float normalMap0Scale = 25.1f;
 	float normalMap1Scale = 28.9f;

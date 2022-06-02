@@ -97,7 +97,7 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 
 		ImGui::SliderFloat("Specular", &specular, 0.0f, 150, "%.01f");
 
-		ImGui::SliderFloat("Specular Power", &pmc.specularPower, 0.0f, 30.0f, "%.01f");
+		ImGui::SliderFloat("Specular Power", &pmc.specularPower, 0.0f, 60.0f, "%.01f");
 
 		ImGui::SliderFloat("SkyBox Weight", &skyBoxWeight, 0.0f, 150, "%.01f");
 		ImGui::SliderFloat("Refraction Distortion Strength", &refractionDistortionStrength, 0.0f, 150, "%.01f");

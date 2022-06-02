@@ -109,7 +109,7 @@ float3 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPositi
 	const float3 pointLightColor = lerp(environmentColor, point_light.diffuseColor, pointEnvironmentBlendDir);
 
 	const float3 dirLightColorSpecular = lerp(environmentColor, float3(1, 1, 1), directionEnvironmentBlendDir);
-	const float3 pointLightColorSpecular = lerp(environmentColor, float3(1, 1, 1) , pointEnvironmentBlendDir);
+	const float3 pointLightColorSpecular = lerp(environmentColor, float3(1, 1, 1), pointEnvironmentBlendDir);
 	
 	float3 diffuseTotal = lerp(depthLerpedColor, dirLightColor * dirDiffuse, skyBoxWeight);
 	diffuseTotal += lerp(depthLerpedColor, pointLightColor * pointDiffuse, skyBoxWeight);
@@ -198,6 +198,7 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float3 waterColorRefracted = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepthMasked));
 	const float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepth));
 	const float3 maskedWaterColor = lerp(waterColorRefracted, waterColor, smoothstep(0, 0.01, refractionA.a));
+
 
 	const float fDistScale = saturate(fresnelDistantScale/Position.w);
 
