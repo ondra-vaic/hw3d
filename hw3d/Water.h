@@ -38,8 +38,8 @@ private:
 	{
 		DirectX::XMFLOAT3 cameraPosition = {0, 0, 0};
 		float padding;
-		DirectX::XMFLOAT4 mainCloseColor = {23/255.0f, 54/255.0f, 70/ 255.0f, 1 };
-		DirectX::XMFLOAT4 mainFarColor = { 21 / 255.0f, 11 / 255.0f, 48 / 255.0f, 1 };
+		DirectX::XMFLOAT4 mainCloseColor = {30/255.0f, 46/255.0f, 54/ 255.0f, 1 };
+		DirectX::XMFLOAT4 mainFarColor = { 1 / 255.0f, 20 / 255.0f, 38 / 255.0f, 1 };
 
 		float width;
 		float height;
@@ -52,15 +52,15 @@ private:
 		float time = 0;
 		float planeY = 0;
 		float specular = 0.5f;
-		float specularPower = 13.f;
+		float specularPower = 4.1f;
 		float skyBoxWeight = 0.7f;
 		float refractionDistortionStrength = 0.1f;
 		float reflectionDistortionStrength = 0.2f;
 		float fresnelBias = 0.1f;
 		float fresnelPower = 0.8f;
-		float fresnelDistantScale = 10.0f;
-		float causticsPower = 0.5f;
-		float causticsLength = 1.2f;
+		float fresnelDistantScale = 18.3f;
+		float causticsPower = 0.7f;
+		float causticsLength = 2.0f;
 		float causticsDepthFallOff = 0.25f;
 		float depthFar = 444.0f;
 		float depthCutOff = 0.5f;
@@ -70,16 +70,16 @@ private:
 	} pmc;
 
 	float specular = 33.0f;
-	float skyBoxWeight = 55.0f;
-	float refractionDistortionStrength = 8.4f;
-	float reflectionDistortionStrength = 2.4f;
-	float causticsDepthFallOff = 9455.0f;
+	float skyBoxWeight = 27.0f;
+	float refractionDistortionStrength = 23.4f;
+	float reflectionDistortionStrength = 20.4f;
+	float causticsDepthFallOff = 3405.0f;
 
-	float fresnelBias = 30.9f;
-	float depthCutOff = 86.5f;
-	float normalMap0Scale = 55.1f;
+	float fresnelBias = 10.9f;
+	float depthCutOff = 20.5f;
+	float normalMap0Scale = 25.1f;
 	float normalMap1Scale = 28.9f;
-	DirectX::XMFLOAT2 normalMap0scrollSpeed = { 1.1f, -1.1f };
+	DirectX::XMFLOAT2 normalMap0scrollSpeed = { 0.1f, -0.6f };
 	DirectX::XMFLOAT2 normalMap1scrollSpeed = { 0.7f,  0.6f };
 
 	DirectX::XMFLOAT3 pos = { 0.0f,0.0f,0.0f };

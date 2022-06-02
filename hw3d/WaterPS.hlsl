@@ -94,20 +94,20 @@ float3 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPositi
 	const float3 pointLightDirection = normalize(point_light.pos - worldPosition);
 	const float3 directionalLightDirection = normalize(directional_light.direction);
 
-	float3 depthLerpedColor = lerp(mainCloseColor, mainFarColor, depth);
+	const float3 depthLerpedColor = lerp(mainCloseColor, mainFarColor, depth);
 
-	float3 environmentColor = SampleSkyBox(reflect(-cameraToPosition, normal), LowColor, HighColor);
-	float directionEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), directionalLightDirection);
-	float pointEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), pointLightDirection);
+	const float3 environmentColor = SampleSkyBox(reflect(-cameraToPosition, normal), LowColor, HighColor);
+	const float directionEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), directionalLightDirection);
+	const float pointEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), pointLightDirection);
 
-	float dirDiffuse = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity) * 2;
-	float pointDiffuse = calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity);
+	const float dirDiffuse = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity);
+	const float pointDiffuse = calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity);
 
-	float3 dirLightColor = lerp(environmentColor, directional_light.diffuseColor, directionEnvironmentBlendDir);
-	float3 pointLightColor = lerp(environmentColor, point_light.diffuseColor, pointEnvironmentBlendDir);
+	const float3 dirLightColor = lerp(environmentColor, directional_light.diffuseColor, directionEnvironmentBlendDir);
+	const float3 pointLightColor = lerp(environmentColor, point_light.diffuseColor, pointEnvironmentBlendDir);
 	
-	float3 diffuseTotal = depthLerpedColor * dirDiffuse * dirLightColor;
-	diffuseTotal += depthLerpedColor * pointDiffuse * pointLightColor;
+	float3 diffuseTotal = lerp(depthLerpedColor, dirLightColor * dirDiffuse, skyBoxWeight);
+	diffuseTotal += lerp(depthLerpedColor, pointLightColor * pointDiffuse, skyBoxWeight);
 
 	float3 specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal) * dirLightColor;
 	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal) * pointLightColor;
@@ -123,11 +123,7 @@ float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, floa
 	float3 normalMap1 = normalTexture.Sample(splr, worldPosition.xz * normalMap0Scale + float2(time * normalMap0scrollSpeed.x, -time * normalMap0scrollSpeed.y)).rbg * 2 - 1;
 	normalMap1.x *= -1;
 
-	float3 normalMap2 = normalTexture.Sample(splr, worldPosition.xz * normalMap1Scale + float2(time * normalMap1scrollSpeed.x, -time * normalMap1scrollSpeed.y)).rbg * 2 - 1;
-	normalMap2.x *= -1;
-
-	const float3 totalNormal = lerp(normalMap2, normalMap1, smoothstep(0, 3, planeY - worldPosition.y));
-	return normalize(mul(totalNormal, tanToTarget));
+	return normalize(mul(normalMap1, tanToTarget));
 }
 
 float3 calculateCaustics(float4 environmentPositionRefracted, float waterDepthRefracted)
@@ -139,12 +135,12 @@ float3 calculateCaustics(float4 environmentPositionRefracted, float waterDepthRe
 	float3 normalAboveGround = calculateNormal(waterOutput.Position, waterOutput.Normal, waterOutput.Tangent, waterOutput.BiTangent);
 
 	const float causticsMapSample = causticsLUTexture.Sample(splr, normalAboveGround.xz);
-	const float causticsStrength = saturate(pow(causticsMapSample * causticsLength, causticsPower));
+	const float causticsStrength = saturate(pow(causticsMapSample * causticsLength, causticsPower)) * saturate(dot(float3(0, 1, 0), directional_light.direction));
 
 	float3 rand = frac(normalAboveGround * 4.157f);
 	float3 chromaColor = normalize(float3(1.0f - rand.x * 0.4f, 0.8f, 0.6f + rand.y * 0.4f));
 
-	return causticsStrength* chromaColor* smoothstep(causticsDepthFallOff, 1, (1 - waterDepthRefracted))* environmentPositionRefracted.a;
+	return causticsStrength * chromaColor * smoothstep(causticsDepthFallOff, 1, (1 - waterDepthRefracted))* environmentPositionRefracted.a;
 }
 
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent, float2 UV : Texcoord) : SV_Target
@@ -168,19 +164,26 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float4 refractionA = worldTexture.Sample(splr, refractedUV);
 	const float4 refractionB = worldTexture.Sample(splr, screenPosition);
 
-	float depthEnvironmentRefracted = length(cameraPosition - environmentPositionRefracted.xyz);
-	float depthEnvironment = length(cameraPosition - environmentPosition.xyz);
-	float distanceWater = length(cameraPosition - WorldPosition.xyz);
+	const float depthEnvironmentRefracted = length(cameraPosition - environmentPositionRefracted.xyz);
+	const float depthEnvironment = length(cameraPosition - environmentPosition.xyz);
+	const float distanceWater = length(cameraPosition - WorldPosition.xyz);
 
-	float waterDepth = smoothstep(0, depthCutOff, (depthEnvironment - distanceWater) / depthFar);
-	float waterDepthRefracted = smoothstep(0, depthCutOff, (depthEnvironmentRefracted - distanceWater) / depthFar);
-	float waterDepthMasked = lerp(waterDepthRefracted, waterDepth, smoothstep(0, 0.01, refractionA.a));
+	const float waterDepthWorld = smoothstep(0.f, 6.8f, (depthEnvironment - distanceWater));
+	const float waveHeightMask = 1 - smoothstep(0, .25f, WorldPosition.y - planeY);
 
-	float4 environmentPositionDepthMasked = lerp(environmentPositionRefracted, environmentPosition, smoothstep(0, 0.01, refractionA.a));
+	const float reflectionMask = saturate(environmentPosition.w + smoothstep(0, 0.85, waterDepthWorld) + waveHeightMask * waterDepthWorld * environmentPosition.w);
+
+	const float waterDepth = smoothstep(0, depthCutOff, (depthEnvironment - distanceWater) / depthFar);
+	const float waterDepthRefracted = smoothstep(0, depthCutOff, (depthEnvironmentRefracted - distanceWater) / depthFar);
+	const float waterDepthMasked = lerp(waterDepthRefracted, waterDepth, smoothstep(0, 0.01, refractionA.a));
+
+	const float4 environmentPositionDepthMasked = lerp(environmentPositionRefracted, environmentPosition, smoothstep(0, 0.01, refractionA.a));
 
 	const float3 caustics = calculateCaustics(environmentPositionDepthMasked, waterDepthMasked);
-	
-	const float4 reflectedColor = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump.xz * reflectionDistortionStrength);
+	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
+
+	float4 reflectedColor = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump.xz * reflectionDistortionStrength);
+	reflectedColor = lerp(maskedRefraction, reflectedColor, reflectionMask);
 
 	const float NdotL = max(dot(cameraToPosition, vReflBump), 0);
 	const float facing = (1.0 - NdotL);
@@ -191,14 +194,10 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepth));
 	const float3 maskedWaterColor = lerp(waterColorRefracted, waterColor, smoothstep(0, 0.01, refractionA.a));
 
-	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
-
 	const float fDistScale = saturate(fresnelDistantScale/Position.w);
 
 	const float3 WaterDeepColor = lerp(maskedWaterColor, maskedRefraction + caustics, fDistScale);
 	const float3 waterCloseColor = lerp(WaterDeepColor, maskedWaterColor + caustics, facing);
-
-	//return float4(lerp(float3(0.5f, 0.5f, 0.8f), cReflect + waterCloseColor, smoothstep(0, 0.012f, waterDepth)), 1);
 
 	return float4(cReflect + waterCloseColor, 1);
 }

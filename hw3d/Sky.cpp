@@ -3,7 +3,6 @@
 #include "BindableCommon.h"
 #include "Cube.h"
 #include "RenderTexture.h"
-#include "Stencil.h"
 #include "TransformCbufDoubleboi.h"
 #include "imgui/imgui.h"
 #include "WaterCbuf.h"

@@ -23,7 +23,7 @@ App::App( const std::string& commandLine )
 	light(new LightData(wnd.Gfx())),
 	water(new Water{wnd.Gfx(), 250.0f, {190 / 255.0f, 195 / 255.0f, 196 / 255.0f}, {11 / 255.0f, 7/ 255.0f, 25 / 255.0f} }),
 	cube(new TestCube(wnd.Gfx(), 8)),
-	sky(new Sky(wnd.Gfx(), 350, {251/255.0f, 211/255.0f, 165/ 255.0f, 1}, { 13/ 255.0f, 33/ 255.0f, 46 / 255.0f, 1})),
+	sky(new Sky(wnd.Gfx(), 350, {233/255.0f, 163/255.0f, 148/ 255.0f, 1}, { 75/ 255.0f, 108/ 255.0f, 130 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture()),
 	depthTexture(new RenderTexture())
@@ -61,9 +61,20 @@ void App::createPool()
 	left->SetPos({ -40 - 75, -75 + 0.5f, 5 });
 	left->SetRotation(0, -PI / 2, 0);
 
+	TestCube* left2 = new TestCube(wnd.Gfx(), 150);
+
+	left2->SetPos({ -40 - 75, -75 + 0.5f, 5 + 75});
+	left2->SetRotation(0, -PI / 2, 0);
+
+	TestCube* right2 = new TestCube(wnd.Gfx(), 150);
+
+	right2->SetPos({ 40 + 75, -75 + 0.5f, 5 + 75 });
+	right2->SetRotation(0, PI / 2, 0);
+
+
 	TestCube* back = new TestCube(wnd.Gfx(), 450);
 
-	back->SetPos({ 0, -450 * .5f + 0.5f, 450 * .5f + 80 });
+	back->SetPos({ 0, -450 * .5f + 0.5f, 450 * .5f + 90 });
 	back->SetRotation(0, -PI / 2, 0);
 
 	TestCube* down = new TestCube(wnd.Gfx(), 25);
@@ -121,6 +132,8 @@ void App::createPool()
 	scene.emplace_back(ground);
 	scene.emplace_back(right);
 	scene.emplace_back(left);
+	scene.emplace_back(right2);
+	scene.emplace_back(left2);
 	scene.emplace_back(backTriangle);
 	scene.emplace_back(underwaterCube);
 	scene.emplace_back(underwaterCube1);
@@ -197,7 +210,7 @@ void App::DoFrame()
 	cam.SetReflectionPlaneY(water->GetY());
 	cam.SetIsReflected(true);
 	wnd.Gfx().SetCamera(cam);
-	wnd.Gfx().SetObliqueClippingPlane(water->GetY() - 1.5f);
+	wnd.Gfx().SetObliqueClippingPlane(water->GetY());
 
 	RenderToTexture(reflectedWorldTexture, 0, true);
 	water->SetReflectedWorldTexture(reflectedWorldTexture->GetShaderResourceView());
