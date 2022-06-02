@@ -22,7 +22,7 @@ float4 SampleSkyBox(float3 viewDir, float3 lowColor, float3 highColor)
     float3 colorDown = lerp(float3(0, 0, 0), lowColor, smoothstep(-1.0f, 0.0f, viewDot));
     float3 colorUp = lerp(lowColor, highColor, smoothstep(0, 0.5f, viewDot));
 
-    return float4(lerp(colorDown, colorUp, smoothstep(-1.0f, 0.25f, viewDot)), 1);
+    return float4(lerp(colorDown, colorUp, smoothstep(-0.8f, 1.0f, viewDot)), 1);
 }
 
 float Attenuate(uniform float attConst, uniform float attLin, uniform float attQuad, const in float distFragToL)
@@ -183,7 +183,7 @@ WaterOutput calculateWaterOutput(float3 modelPosition, float _time)
 	WaterOutput waterOutput;
 
 	float3 newPosition = calculateWavePosition(modelPosition.xyz, _time);
-	newPosition.y += -1.5f;
+	//newPosition.y += -1.5f;
 	//newPosition
 
 	waterOutput.Position = newPosition;

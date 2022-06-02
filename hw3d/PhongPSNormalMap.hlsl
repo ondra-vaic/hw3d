@@ -37,7 +37,7 @@ Texture2D nmap : register(t1);
 SamplerState splr;
 
 
-float4 main(float4 pos : SV_Position, float3 worldPos : Color, float3 viewFragPos : Position, float3 viewNormal : Normal, float3 viewTan : Tangent, float3 viewBitan : Bitangent, float2 tc : Texcoord) : SV_Target
+float4 main(float4 pos : SV_Position, float3 worldPos : Color, float4 worldNormal : Color1, float3 viewFragPos : Position, float3 viewNormal : Normal, float3 viewTan : Tangent, float3 viewBitan : Bitangent, float2 tc : Texcoord) : SV_Target
 {
 	viewNormal = MapNormal(normalize(viewTan), normalize(viewBitan), viewNormal, tc, nmap, splr);
 

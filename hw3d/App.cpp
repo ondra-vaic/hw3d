@@ -22,17 +22,17 @@ App::App( const std::string& commandLine )
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
 	water(new Water{wnd.Gfx(), 250.0f, {190 / 255.0f, 195 / 255.0f, 196 / 255.0f}, {11 / 255.0f, 7/ 255.0f, 25 / 255.0f} }),
-	cube(new TestCube(wnd.Gfx(), 25)),
-	sky(new Sky(wnd.Gfx(), 350, {219/255.0f, 203/255.0f, 201/ 255.0f, 1}, { 73/ 255.0f, 124/ 255.0f, 161 / 255.0f, 1})),
+	cube(new TestCube(wnd.Gfx(), 8)),
+	sky(new Sky(wnd.Gfx(), 350, {251/255.0f, 211/255.0f, 165/ 255.0f, 1}, { 13/ 255.0f, 33/ 255.0f, 46 / 255.0f, 1})),
 	worldTexture(new RenderTexture()),
 	reflectedWorldTexture(new RenderTexture()),
 	depthTexture(new RenderTexture())
 {
 	TestDynamicConstant();
-	cube->SetPos({ 0, 15, 45});
+	cube->SetPos({ -30, -5.5f, 25});
 
 	createPool();
-	//scene.emplace_back(cube);
+	scene.emplace_back(cube);
 	scene.emplace_back(sky);
 	scene.emplace_back(water);
 
@@ -68,7 +68,7 @@ void App::createPool()
 
 	TestCube* down = new TestCube(wnd.Gfx(), 25);
 
-	down->SetPos({ 0, -23, 35 });
+	down->SetPos({ 0, -25, 35 });
 	down->SetRotation(0, -PI / 4, PI / 4);
 
 	TestCube* rightBack = new TestCube(wnd.Gfx(), 45);
@@ -88,7 +88,7 @@ void App::createPool()
 
 	TestCube* backTriangle = new TestCube(wnd.Gfx(), 25);
 
-	backTriangle->SetPos({ 0, 0, 80 + 0.03f + 25 *.5f });
+	backTriangle->SetPos({ 0, -7, 80 + 0.03f + 25 *.5f });
 	backTriangle->SetRotation(PI / 4, PI/2, 0);
 
 	TestCube* underwaterCube = new TestCube(wnd.Gfx(), 10);
@@ -98,17 +98,17 @@ void App::createPool()
 
 	TestCube* underwaterCube1 = new TestCube(wnd.Gfx(), 50);
 
-	underwaterCube1->SetPos({ 40 + 25 - 10, -25 - 4.5f, 16 });
+	underwaterCube1->SetPos({ 40 + 25 - 10, -25 - 6.0f, 16 });
 	underwaterCube1->SetRotation(0, 0, 0);
 
 	TestCube* underwaterCube2 = new TestCube(wnd.Gfx(), 50);
 
-	underwaterCube2->SetPos({ 40 + 25 - 12, -25 - 5.5f, 12 });
+	underwaterCube2->SetPos({ 40 + 25 - 12, -25 - 7.0f, 12 });
 	underwaterCube2->SetRotation(0.06f, -0.15f, 0);
 
 	TestCube* underwaterCube3 = new TestCube(wnd.Gfx(), 50);
 
-	underwaterCube3->SetPos({ 40 + 25 - 12.5f, -25 - 6.5f, 9 });
+	underwaterCube3->SetPos({ 40 + 25 - 12.5f, -25 - 7.5f, 9 });
 	underwaterCube3->SetRotation(0.18f, -0.25f, 0);
 
 	
@@ -128,13 +128,15 @@ void App::createPool()
 	scene.emplace_back(underwaterCube3);
 }
 
-void App::Render(bool ignoreUi)
+void App::Render(bool ignoreUi, bool renderWater)
 {
 	light->Bind(wnd.Gfx(), cam.GetMatrix());
 
 	light->Draw(wnd.Gfx());
 	for (auto drawable : scene)
 	{
+		if(!renderWater && drawable == water) continue;
+
 		drawable->Draw(wnd.Gfx());
 	}
 
@@ -162,11 +164,11 @@ void App::Render(bool ignoreUi)
 	}
 }
 
-void App::RenderToTexture(RenderTexture* renderTexture, float alphaClear)
+void App::RenderToTexture(RenderTexture* renderTexture, float alphaClear, bool renderWater)
 {
 	renderTexture->SetRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView());
 	renderTexture->ClearRenderTarget(wnd.Gfx().GetDeviceContext(), wnd.Gfx().GetDepthStencilView(), 0, 0, 0, alphaClear);
-	Render(true);
+	Render(true, renderWater);
 	wnd.Gfx().SetBackBufferRenderTarget();
 }
 
@@ -182,7 +184,7 @@ void App::DoFrame()
 
 		element->SetRenderDepth(true);
 	}
-	RenderToTexture(depthTexture, 0);
+	RenderToTexture(depthTexture, 0, false);
 
 	for (auto element : scene)
 	{
@@ -195,22 +197,22 @@ void App::DoFrame()
 	cam.SetReflectionPlaneY(water->GetY());
 	cam.SetIsReflected(true);
 	wnd.Gfx().SetCamera(cam);
-	wnd.Gfx().SetObliqueClippingPlane(water->GetY() - 2.7f);
+	wnd.Gfx().SetObliqueClippingPlane(water->GetY() - 1.5f);
 
-	RenderToTexture(reflectedWorldTexture, 0);
+	RenderToTexture(reflectedWorldTexture, 0, true);
 	water->SetReflectedWorldTexture(reflectedWorldTexture->GetShaderResourceView());
 
 	cam.SetIsReflected(false);
 	wnd.Gfx().SetCamera(cam);
 	wnd.Gfx().SetStandardProjection();
 
-	RenderToTexture(worldTexture, 1);
+	RenderToTexture(worldTexture, 1, true);
 	water->SetWorldTexture(worldTexture->GetShaderResourceView());
 
 	water->SetDrawMode(WATER);
 
 	wnd.Gfx().BeginFrame(0.0f, 0.0f, 0.0f);
-	Render(false);
+	Render(false, true);
 	wnd.Gfx().EndFrame();
 
 	while( const auto e = wnd.kbd.ReadKey() )

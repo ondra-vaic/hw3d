@@ -24,8 +24,8 @@ public:
 private:
 	void DoFrame();
 	void ShowImguiDemoWindow();
-	void Render(bool ignoreUi);
-	void RenderToTexture(RenderTexture* renderTexture, float alphaClear);
+	void Render(bool ignoreUi, bool renderWater);
+	void RenderToTexture(RenderTexture* renderTexture, float alphaClear, bool renderWater);
 private:
 	std::string commandLine;
 	bool showDemoWindow = false;

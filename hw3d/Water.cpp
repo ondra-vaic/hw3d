@@ -97,7 +97,7 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 
 		ImGui::SliderFloat("Specular", &specular, 0.0f, 150, "%.01f");
 
-		ImGui::SliderFloat("Specular Power", &pmc.specularPower, 0.0f, 8.0f, "%.01f");
+		ImGui::SliderFloat("Specular Power", &pmc.specularPower, 0.0f, 30.0f, "%.01f");
 
 		ImGui::SliderFloat("SkyBox Weight", &skyBoxWeight, 0.0f, 150, "%.01f");
 		ImGui::SliderFloat("Refraction Distortion Strength", &refractionDistortionStrength, 0.0f, 150, "%.01f");
@@ -106,10 +106,10 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 
 		ImGui::SliderFloat("Fresnel Power", &pmc.fresnelPower, 0.0f, 100.0f, "%.01f");
 		ImGui::SliderFloat("Fresnel Distant Scale", &pmc.fresnelDistantScale, 0.0f, 35.0f, "%.01f");
-		ImGui::SliderFloat("Caustics Power", &pmc.causticsPower, 0.0f, 35.0f, "%.01f");
-		ImGui::SliderFloat("Caustics Length", &pmc.causticsLength, 0.0f, 35.0f, "%.01f");
+		ImGui::SliderFloat("Caustics Power", &pmc.causticsPower, 0.0f, 2.0f, "%.01f");
+		ImGui::SliderFloat("Caustics Length", &pmc.causticsLength, 0.0f, 2.0f, "%.01f");
 
-		ImGui::SliderFloat("Caustics Depth FallOff", &causticsDepthFallOff, 0.0f, 100, "%.01f");
+		ImGui::SliderFloat("Caustics Depth FallOff", &causticsDepthFallOff, 0.0f, 10000, "%.01f");
 
 		ImGui::SliderFloat("Depth Cut Off Bias", &depthCutOff, 0.0f, 100, "%.01f");
 		ImGui::SliderFloat("Depth Far", &pmc.depthFar, 0.0f, 600.0f, "%.01f");
@@ -117,11 +117,11 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 
 		pmc.specular = specular / 100;
 		pmc.skyBoxWeight = skyBoxWeight / 100;
-		pmc.refractionDistortionStrength = refractionDistortionStrength / 100;
-		pmc.reflectionDistortionStrength = reflectionDistortionStrength / 100;
+		pmc.refractionDistortionStrength = refractionDistortionStrength / 1000;
+		pmc.reflectionDistortionStrength = reflectionDistortionStrength / 1000;
 		pmc.depthCutOff = depthCutOff / 100;
 		pmc.fresnelBias = fresnelBias / 100;
-		pmc.causticsDepthFallOff = causticsDepthFallOff / 100;
+		pmc.causticsDepthFallOff = causticsDepthFallOff / 10000;
 		pmc.normalMap0Scale = normalMap0Scale / 1000;
 		pmc.normalMap1Scale = normalMap1Scale / 1000;
 

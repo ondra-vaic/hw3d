@@ -8,7 +8,7 @@ cbuffer CBuf : register(b3)
 	float3 CameraPosition;
 }
 
-float4 main(float4 Position : SV_Position, float3 worldPosition : Color) : SV_TARGET
+float4 main(float4 Position : SV_Position, float3 worldPosition : Color, float4 worldNormal : Color1) : SV_TARGET
 {
 	const float3 viewDir = normalize(worldPosition - CameraPosition);
 	return SampleSkyBox(viewDir, LowColor, HighColor);
