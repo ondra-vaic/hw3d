@@ -18,7 +18,7 @@ namespace dx = DirectX;
 App::App( const std::string& commandLine )
 	:
 	commandLine( commandLine ),
-	wnd( 1280,720,"The Donkey Fart Box" ),
+	wnd( 1700,900,"The Donkey Fart Box" ),
 	scriptCommander( TokenizeQuoted( commandLine ) ),
 	light(new LightData(wnd.Gfx())),
 	water(new Water{wnd.Gfx(), 250.0f, {190 / 255.0f, 195 / 255.0f, 196 / 255.0f}, {11 / 255.0f, 7/ 255.0f, 25 / 255.0f} }),

@@ -96,21 +96,26 @@ float3 calculateColor(float4 worldPosition, float3 normal, float3 cameraToPositi
 
 	const float3 depthLerpedColor = lerp(mainCloseColor, mainFarColor, depth);
 
-	const float3 environmentColor = SampleSkyBox(reflect(-cameraToPosition, normal), LowColor, HighColor);
-	const float directionEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), directionalLightDirection);
-	const float pointEnvironmentBlendDir = dot(reflect(-cameraToPosition, normal), pointLightDirection);
+	const float3 reflectionDirection = reflect(-cameraToPosition, normal);
+	const float3 environmentColor = SampleSkyBox(reflectionDirection, LowColor, HighColor);
+	
+	const float directionEnvironmentBlendDir = dot(reflectionDirection, directionalLightDirection);
+	const float pointEnvironmentBlendDir = dot(reflectionDirection, pointLightDirection);
 
 	const float dirDiffuse = calculateDiffuse(directionalLightDirection, normal, directional_light.diffuseIntensity);
 	const float pointDiffuse = calculateDiffuse(pointLightDirection, normal, point_light.diffuseIntensity);
 
 	const float3 dirLightColor = lerp(environmentColor, directional_light.diffuseColor, directionEnvironmentBlendDir);
 	const float3 pointLightColor = lerp(environmentColor, point_light.diffuseColor, pointEnvironmentBlendDir);
+
+	const float3 dirLightColorSpecular = lerp(environmentColor, float3(1, 1, 1), directionEnvironmentBlendDir);
+	const float3 pointLightColorSpecular = lerp(environmentColor, float3(1, 1, 1) , pointEnvironmentBlendDir);
 	
 	float3 diffuseTotal = lerp(depthLerpedColor, dirLightColor * dirDiffuse, skyBoxWeight);
 	diffuseTotal += lerp(depthLerpedColor, pointLightColor * pointDiffuse, skyBoxWeight);
 
-	float3 specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal) * dirLightColor;
-	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal) * pointLightColor;
+	float3 specular = calculateSpecular(cameraToPosition, directionalLightDirection, normal) * dirLightColorSpecular;
+	specular += calculateSpecular(cameraToPosition, pointLightDirection, normal) * pointLightColorSpecular;
 
 	const float3 waterColorShaded = (diffuseTotal + directional_light.ambient);
 
