@@ -1,4 +1,7 @@
 #include "Water.h"
+
+#include <chrono>
+
 #include "Plane.h"
 #include "BindableCommon.h"
 #include "RenderTexture.h"
@@ -14,6 +17,8 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainCloseColor, Direct
 {
 	using namespace Bind;
 	namespace dx = DirectX;
+
+	startTime = getTime();
 
 	auto model = Plane::Make(250, size);
 	model.Transform(dx::XMMatrixScaling(size, size, 1.0f));
@@ -33,11 +38,7 @@ Water::Water(Graphics& gfx, float size, DirectX::XMFLOAT3 mainCloseColor, Direct
 	maskShader = PixelShader::Resolve(gfx, "WaterMaskPS.cso");
 	depthShader = PixelShader::Resolve(gfx, "WaterDepthPS.cso");
 
-	waterPixelCBuf = std::make_shared<WaterPixelCbuf>(gfx, *this, 1u);
-	waterPixelCBuf->mainCloseColor = mainCloseColor;
-	waterPixelCBuf->mainFarColor = mainFarColor;
-
-	AddBind(waterPixelCBuf);
+	AddBind(PixelConstantBuffer<WaterPSMaterialConstant>::Resolve(gfx, pmc, 1u));
 
 	AddBind(std::make_shared<Stencil>(gfx, Stencil::Mode::Off));
 
@@ -84,9 +85,62 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("Shading");
 
-		ImGui::ColorEdit3("Water close color", &waterPixelCBuf->mainCloseColor.x);
-		ImGui::ColorEdit3("Water far color", &waterPixelCBuf->mainFarColor.x);
+		ImGui::ColorEdit3("Water close color", &pmc.mainCloseColor.x);
+		ImGui::ColorEdit3("Water far color", &pmc.mainFarColor.x);
+
+		ImGui::SliderFloat("Normal Map0 Scale", &normalMap0Scale, 0.0f, 100, "%.01f");
+		ImGui::SliderFloat("Normal Map1 Scale", &normalMap1Scale, 0.0f, 100, "%.01f");
+		ImGui::SliderFloat("Normal Map0 ScrollSpeed X", &normalMap0scrollSpeed.x, -10, 10, "%.01f");
+		ImGui::SliderFloat("Normal Map0 ScrollSpeed Y", &normalMap0scrollSpeed.y, -10, 10, "%.01f");
+		ImGui::SliderFloat("Normal Map1 ScrollSpeed X", &normalMap1scrollSpeed.x, -10, 10, "%.01f");
+		ImGui::SliderFloat("Normal Map1 ScrollSpeed Y", &normalMap1scrollSpeed.y, -10, 10, "%.01f");
+
+		ImGui::SliderFloat("Specular", &specular, 0.0f, 150, "%.01f");
+
+		ImGui::SliderFloat("Specular Power", &pmc.specularPower, 0.0f, 8.0f, "%.01f");
+
+		ImGui::SliderFloat("SkyBox Weight", &skyBoxWeight, 0.0f, 150, "%.01f");
+		ImGui::SliderFloat("Refraction Distortion Strength", &refractionDistortionStrength, 0.0f, 150, "%.01f");
+		ImGui::SliderFloat("Reflection Distortion Strength", &reflectionDistortionStrength, 0.0f, 150, "%.01f");
+		ImGui::SliderFloat("Fresnel Bias", &fresnelBias, 0.0f, 100, "%.01f");
+
+		ImGui::SliderFloat("Fresnel Power", &pmc.fresnelPower, 0.0f, 100.0f, "%.01f");
+		ImGui::SliderFloat("Fresnel Distant Scale", &pmc.fresnelDistantScale, 0.0f, 35.0f, "%.01f");
+		ImGui::SliderFloat("Caustics Power", &pmc.causticsPower, 0.0f, 35.0f, "%.01f");
+		ImGui::SliderFloat("Caustics Length", &pmc.causticsLength, 0.0f, 35.0f, "%.01f");
+
+		ImGui::SliderFloat("Caustics Depth FallOff", &causticsDepthFallOff, 0.0f, 100, "%.01f");
+
+		ImGui::SliderFloat("Depth Cut Off Bias", &depthCutOff, 0.0f, 100, "%.01f");
+		ImGui::SliderFloat("Depth Far", &pmc.depthFar, 0.0f, 600.0f, "%.01f");
+		const int timeSinceStart = getTime() - startTime;
+
+		pmc.specular = specular / 100;
+		pmc.skyBoxWeight = skyBoxWeight / 100;
+		pmc.refractionDistortionStrength = refractionDistortionStrength / 100;
+		pmc.reflectionDistortionStrength = reflectionDistortionStrength / 100;
+		pmc.depthCutOff = depthCutOff / 100;
+		pmc.fresnelBias = fresnelBias / 100;
+		pmc.causticsDepthFallOff = causticsDepthFallOff / 100;
+		pmc.normalMap0Scale = normalMap0Scale / 1000;
+		pmc.normalMap1Scale = normalMap1Scale / 1000;
+
+		pmc.normalMap0scrollSpeedX= normalMap0scrollSpeed.x / 10000;
+		pmc.normalMap0scrollSpeedY = normalMap0scrollSpeed.y / 10000;
+		pmc.normalMap1scrollSpeedX = normalMap1scrollSpeed.y / 10000;
+		pmc.normalMap1scrollSpeedY = normalMap1scrollSpeed.y / 10000;
+
+		pmc.cameraPosition = gfx.GetCameraPosition();
+		pmc.time = static_cast<float>(timeSinceStart);
+		pmc.width = static_cast<float>(gfx.GetViewportWidth());
+		pmc.height = static_cast<float>(gfx.GetViewportHeight());
+
+		pmc.planeY = GetY();
+
+		QueryBindable<Bind::PixelConstantBuffer<WaterPSMaterialConstant>>()->Update(gfx, pmc);
 	}
+
+	
 	ImGui::End();
 }
 
@@ -152,4 +206,14 @@ void Water::SetDrawMode(DrawMode drawMode)
 float Water::GetY() const
 {
 	return pos.y;
+}
+
+int Water::getTime()
+{
+	using namespace std::chrono;
+	auto ms = duration_cast<milliseconds>(
+		system_clock::now().time_since_epoch()
+		);
+
+	return static_cast<int>(ms.count());
 }
