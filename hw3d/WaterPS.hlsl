@@ -53,7 +53,7 @@ cbuffer CBuf : register(b1)
 	float normalMap0Scale = 0.05f;
 	float normalMap1Scale = 0.016f;
 
-	float1 pad;
+	float causticsPlaneHeight;
 };
 
 cbuffer SkyBox : register(b3)
@@ -131,6 +131,11 @@ float3 calculateNormal(float3 worldPosition, float3 normal, float3 tangent, floa
 	return normalize(mul(normalMap1, tanToTarget));
 }
 
+float3 line_plane_intercept(float3 lineP, float3 lineN, float planeD) {
+	float distance = (planeD - lineP.y) / lineN.y;
+	return lineP + lineN * distance;
+} 
+
 float3 calculateCaustics(float4 environmentPositionRefracted, float waterDepthRefracted)
 {
 	const float3 waterPlanePosition = float3(environmentPositionRefracted.x, planeY, environmentPositionRefracted.z);
@@ -138,14 +143,16 @@ float3 calculateCaustics(float4 environmentPositionRefracted, float waterDepthRe
 	const WaterOutput waterOutput = calculateWaterOutput(waterPlanePosition, time);
 
 	float3 normalAboveGround = calculateNormal(waterOutput.Position, waterOutput.Normal, waterOutput.Tangent, waterOutput.BiTangent);
+	float3 lineIntercept = line_plane_intercept(waterPlanePosition.xyz, normalAboveGround, planeY + causticsPlaneHeight);
 
-	const float causticsMapSample = causticsLUTexture.Sample(splr, normalAboveGround.xz);
-	const float causticsStrength = saturate(pow(causticsMapSample * causticsLength, causticsPower)) * saturate(dot(float3(0, 1, 0), directional_light.direction));
+	const float lightAbove = saturate(dot(float3(0, 1, 0), directional_light.direction));
+	const float causticsMapSample = causticsLUTexture.Sample(splr, lineIntercept.xz);
+	const float causticsStrength = saturate(pow(causticsMapSample * causticsLength * 4, causticsPower * 3)) * lightAbove;
 
 	float3 rand = frac(normalAboveGround * 4.157f);
-	float3 chromaColor = normalize(float3(1.0f - rand.x * 0.4f, 0.8f, 0.6f + rand.y * 0.4f));
-
-	return causticsStrength * chromaColor * smoothstep(causticsDepthFallOff, 1, (1 - waterDepthRefracted))* environmentPositionRefracted.a;
+	float3 chromaColor = normalize(float3(1.0f - rand.x * 0.4f, 0.8f, 0.6f + rand.x * 0.4f));
+	
+	return causticsStrength * chromaColor * smoothstep(causticsDepthFallOff, 1, (1 - waterDepthRefracted)) * environmentPositionRefracted.a * directional_light.diffuseIntensity;
 }
 
 float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, float3 Normal : Normal, float3 Tangent : Tangent, float3 BiTangent : Bitangent, float2 UV : Texcoord) : SV_Target
@@ -168,7 +175,8 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 
 	const float4 refractionA = worldTexture.Sample(splr, refractedUV);
 	const float4 refractionB = worldTexture.Sample(splr, screenPosition);
-
+	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
+	
 	const float depthEnvironmentRefracted = length(cameraPosition - environmentPositionRefracted.xyz);
 	const float depthEnvironment = length(cameraPosition - environmentPosition.xyz);
 	const float distanceWater = length(cameraPosition - WorldPosition.xyz);
@@ -182,11 +190,14 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float waterDepthRefracted = smoothstep(0, depthCutOff, (depthEnvironmentRefracted - distanceWater) / depthFar);
 	const float waterDepthMasked = lerp(waterDepthRefracted, waterDepth, smoothstep(0, 0.01, refractionA.a));
 
+	const float3 waterColorRefracted = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepthMasked));
+	const float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepth));
+	const float3 maskedWaterColor = lerp(waterColorRefracted, waterColor, smoothstep(0, 0.01, refractionA.a));
+
 	const float4 environmentPositionDepthMasked = lerp(environmentPositionRefracted, environmentPosition, smoothstep(0, 0.01, refractionA.a));
-
-	const float3 caustics = calculateCaustics(environmentPositionDepthMasked, waterDepthMasked);
-	const float4 maskedRefraction = lerp(refractionA, refractionB, smoothstep(0, 0.01, refractionA.a));
-
+	float3 caustics = calculateCaustics(environmentPositionDepthMasked, waterDepthMasked);
+	caustics *= 1 - smoothstep(12, 120, depthEnvironmentRefracted);
+	
 	float4 reflectedColor = reflectedWorldTexture.Sample(splr, flippedYscreenPosition + vReflBump.xz * reflectionDistortionStrength);
 	reflectedColor = lerp(maskedRefraction, reflectedColor, reflectionMask);
 
@@ -194,11 +205,6 @@ float4 main(float4 Position : SV_Position, float4 WorldPosition : Position, floa
 	const float facing = (1.0 - NdotL);
 	const float fresnel = Fresnel(NdotL, fresnelBias, fresnelPower);
 	const float3 cReflect = fresnel * reflectedColor;
-
-	const float3 waterColorRefracted = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepthMasked));
-	const float3 waterColor = calculateColor(WorldPosition, normal, cameraToPosition, smoothstep(0, 0.1, waterDepth));
-	const float3 maskedWaterColor = lerp(waterColorRefracted, waterColor, smoothstep(0, 0.01, refractionA.a));
-
 
 	const float fDistScale = saturate(fresnelDistantScale/Position.w);
 

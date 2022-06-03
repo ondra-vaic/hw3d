@@ -59,14 +59,14 @@ private:
 		float fresnelBias = 0.1f;
 		float fresnelPower = 8.3f;
 		float fresnelDistantScale = 18.3f;
-		float causticsPower = 1.7f;
-		float causticsLength = 2.0f;
+		float causticsPower = 1.5f;
+		float causticsLength = 0.5f;
 		float causticsDepthFallOff = 0.25f;
 		float depthFar = 444.0f;
 		float depthCutOff = 0.5f;
 		float normalMap0Scale = 0.05f;
 		float normalMap1Scale = 0.016f;
-		float pad[1];
+		float causticsPlaneHeight = 3.1f;
 	} pmc;
 
 	float specular = 46.0f;

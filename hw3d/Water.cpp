@@ -108,6 +108,7 @@ void Water::SpawnControlWindow(Graphics& gfx, const std::string& name) noexcept
 		ImGui::SliderFloat("Fresnel Distant Scale", &pmc.fresnelDistantScale, 0.0f, 35.0f, "%.01f");
 		ImGui::SliderFloat("Caustics Power", &pmc.causticsPower, 0.0f, 2.0f, "%.01f");
 		ImGui::SliderFloat("Caustics Length", &pmc.causticsLength, 0.0f, 2.0f, "%.01f");
+		ImGui::SliderFloat("Caustics Plane height", &pmc.causticsPlaneHeight, 0.0f, 8.0f, "%.01f");
 
 		ImGui::SliderFloat("Caustics Depth FallOff", &causticsDepthFallOff, 0.0f, 10000, "%.01f");
 
