@@ -1,9 +1,7 @@
 # Water shader
 
-![alt text](ScreenShot1.png)
-
-Youtube demo: https://youtu.be/zg3mEDNXRUE
-
+![alt text](ScreenShot1.png)\
+Youtube demo: https://youtu.be/zg3mEDNXRUE\
 The shader uses reflections, refractions, realistic wave motion and water caustics.
 
 
