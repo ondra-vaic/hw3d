@@ -1,6 +1,6 @@
 # Water shader
 
-![alt text](ScreenShot.png)
+![alt text](ScreenShot1.png)
 
 Water shader made using Direct3D. The shader uses multiple techniques from:
 
