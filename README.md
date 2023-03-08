@@ -4,7 +4,7 @@
 
 Youtube demo: https://youtu.be/zg3mEDNXRUE
 
-### Water shader made using Direct3D. The shader uses multiple techniques from:
+Water shader made using Direct3D. The shader uses multiple techniques from:
 
 https://developer.nvidia.com/gpugems/gpugems/part-i-natural-effects/chapter-1-effective-water-simulation-physical-models
 https://developer.nvidia.com/gpugems/gpugems/part-i-natural-effects/chapter-2-rendering-water-caustics
