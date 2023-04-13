@@ -2,7 +2,7 @@
 
 ![alt text](ScreenShot1.png)\
 Youtube demo: https://youtu.be/zg3mEDNXRUE \
-The shader uses reflections, refractions, realistic wave motion and water caustics.
+The shader uses reflections, refractions, realistic wave motion, water caustics, normal mapping, enviroment lighting and water depth coloring.
 
 
 Water shader made using Direct3D. The shader uses multiple techniques from:\
